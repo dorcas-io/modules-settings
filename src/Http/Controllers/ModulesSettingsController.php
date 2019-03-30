@@ -18,7 +18,7 @@ class ModulesSettingsController extends Controller {
         $this->data = [
             'page' => ['title' => 'Settings Module'],
             'header' => ['title' => 'Settings Module'],
-            'selectedMenu' => 'sales'
+            'selectedMenu' => 'settings-main'
         ];
     }
 

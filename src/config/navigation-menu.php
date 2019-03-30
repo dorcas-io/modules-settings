@@ -19,5 +19,13 @@ return [
     'settings-customization' => [
     	'title' => 'Customization Settings',
     	'route' => 'settings-customization'
+    ],
+    'settings-access-grants' => [
+        'title' => 'Access Grants',
+        'route' => 'access-grants'
+    ],
+    'settings-banking' => [
+        'title' => 'Banking Settings',
+        'route' => 'settings-banking'
     ]
 ];
