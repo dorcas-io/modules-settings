@@ -33,6 +33,6 @@ Route::group(['namespace' => 'Dorcas\ModulesSettings\Http\Controllers', 'middlew
  */
 Route::group(['middleware' => ['auth'], 'namespace' => 'Ajax', 'prefix' => 'xhr'], function () {
 	Route::post('/settings', 'Settings@update');
-}
+});
 
 ?>
