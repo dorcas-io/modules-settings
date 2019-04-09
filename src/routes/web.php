@@ -5,8 +5,8 @@
 });*/
 
 
-Route::group(['namespace' => 'Dorcas\ModulesSettings\Http\Controllers', 'middleware' => ['auth']], function() {
-    Route::get('settings-main', 'ModulesSettingsController@index')->name('settings-main');
+Route::group(['namespace' => 'Dorcas\ModulesSettings\Http\Controllers', 'middleware' => ['web']], function() {
+    Route::get('/settings-main', 'ModulesSettingsController@index')->name('settings-main');
 
     Route::get('/settings-banking', 'ModulesSettingsController@banking_index')->name('settings-banking');
     Route::post('/settings-banking', 'ModulesSettingsController@banking_post');
@@ -28,11 +28,51 @@ Route::group(['namespace' => 'Dorcas\ModulesSettings\Http\Controllers', 'middlew
 
 });
 
+Route::group(['middleware' => ['auth']], function () {
+    Route::get('/plans', 'UpgradePlan@index')->name('plans');
+    Route::get('/subscription', 'Subscription@index')->name('subscription');
+    Route::post('/subscription', 'Subscription@post');
+});
+
 /**
  * Route Group for XHR: /xhr/...
  */
 Route::group(['middleware' => ['auth'], 'namespace' => 'Ajax', 'prefix' => 'xhr'], function () {
 	Route::post('/settings', 'Settings@update');
+});
+
+
+
+$request = app()->make('request');
+$currentHost = $request->header('host');
+$defaultUri = new Uri(config('app.url'));
+try {
+    $domainInfo = (new App\Http\Middleware\ResolveCustomSubdomain())->splitHost($currentHost);
+} catch (RuntimeException $e) {
+    $domainInfo = null;
+}
+$storeSubDomain = !empty($domainInfo) && $domainInfo->getService() === 'store' ?
+    $currentHost : 'store' . $defaultUri->getHost();
+
+Route::prefix('store')->group(function () {
+    Route::get('/', 'WebStore\RedirectRoute@index');
+    Route::get('/categories/{id?}', 'WebStore\RedirectRoute@index');
+    Route::get('/products/{id?}', 'WebStore\RedirectRoute@index');
+    Route::get('/cart', 'WebStore\RedirectRoute@index');
+});
+
+Route::domain($storeSubDomain)->namespace('WebStore')->middleware(['web_store'])->group(function () {
+    Route::get('/', 'Home@index')->name('webstore');
+    Route::get('/categories', 'Home@categories')->name('webstore.categories');
+    Route::get('/categories/{id}', 'Home@index')->name('webstore.categories.single');
+    Route::get('/products', 'Home@products')->name('webstore.products');
+    Route::get('/products/{id}', 'Home@productDetails')->name('webstore.products.details');
+    Route::get('/cart', 'Cart@index')->name('webstore.cart');
+    Route::get('/product-quick-view/{id}', 'Home@quickView')->name('webstore.quick-view');
+    Route::delete('/xhr/cart', 'Cart@removeFromCartXhr');
+    Route::post('/xhr/cart', 'Cart@addToCartXhr');
+    Route::post('/xhr/cart/checkout', 'Cart@checkoutXhr');
+    Route::put('/xhr/cart/update-quantities', 'Cart@updateCartQuantitiesXhr');
 });
 
 ?>

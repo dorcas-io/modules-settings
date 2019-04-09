@@ -12,16 +12,16 @@ class ModulesSettingsServiceProvider extends ServiceProvider {
 		$this->publishes([
 			__DIR__.'/config/modules-settings.php' => config_path('modules-settings.php'),
 		], 'config');
-		$this->publishes([
+		/*$this->publishes([
 			__DIR__.'/assets' => public_path('vendor/modules-settings')
-		], 'public');
+		], 'public');*/
 	}
 
 	public function register()
 	{
 		//add menu config
 		$this->mergeConfigFrom(
-	        __DIR__.'/config/navigation-menu.php', 'navigation-menu.settings.sub-menu'
+	        __DIR__.'/config/navigation-menu.php', 'navigation-menu.modules-settings.sub-menu'
 	     );
 	}
 
