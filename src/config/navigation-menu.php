@@ -10,7 +10,7 @@ return [
     ],
     'settings-account' => [
     	'title' => 'Personal Settings',
-    	'route' => 'settings-account'
+    	'route' => 'settings-personal'
     ],
     'settings-business' => [
     	'title' => 'Business Settings',
