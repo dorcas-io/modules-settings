@@ -16,40 +16,51 @@ $storeSubDomain = !empty($domainInfo) && $domainInfo->getService() === 'store' ?
     $currentHost : 'store' . $defaultUri->getHost();
 
 
-Route::group(['namespace' => 'Dorcas\ModulesSettings\Http\Controllers', 'prefix' => 'mse', 'middleware' => ['web']], function() {
-Route::get('/settings-main', 'ModulesSettingsController@index')->name('settings-main');
+Route::group(['namespace' => 'Dorcas\ModulesSettings\Http\Controllers', 'prefix' => 'mse', 'middleware' => ['web','auth']], function() {
+    Route::get('/settings-main', 'ModulesSettingsController@index')->name('settings-main');
 
-Route::get('/settings/business', 'ModulesSettingsController@business_index')->name('settings-business');
-Route::post('/settings/business', 'ModulesSettingsController@business_post');
+    Route::get('/settings-business', 'ModulesSettingsController@business_index')->name('settings-business');
+    Route::post('/settings-business', 'ModulesSettingsController@business_post');
 
-Route::get('/settings/personal', 'ModulesSettingsController@personal_index')->name('settings-personal');
-Route::post('/settings/personal', 'ModulesSettingsController@personal_post');
+    Route::get('/settings-personal', 'ModulesSettingsController@personal_index')->name('settings-personal');
+    Route::post('/settings-personal', 'ModulesSettingsController@personal_post');
 
-Route::get('/settings-security', 'ModulesSettingsController@security_index')->name('settings-security');
-Route::post('/settings-security', 'ModulesSettingsController@security_post');
+    Route::get('/settings-security', 'ModulesSettingsController@security_index')->name('settings-security');
+    Route::post('/settings-security', 'ModulesSettingsController@security_post');
 
-Route::get('/settings/customization', 'ModulesSettingsController@customization_index')->name('settings-customization');
-Route::post('/settings/customization', 'ModulesSettingsController@customization_post');
+    Route::get('/settings-customization', 'ModulesSettingsController@customization_index')->name('settings-customization');
+    Route::post('/settings-customization', 'ModulesSettingsController@customization_post');
 
-Route::get('/settings/billing', 'ModulesSettingsController@billing_index')->name('settings-billing');
-Route::post('/settings/billing', 'ModulesSettingsController@billing_post');
+    Route::get('/settings-billing', 'ModulesSettingsController@billing_index')->name('settings-billing');
+    Route::post('/settings-billing', 'ModulesSettingsController@billing_post');
+    Route::post('/settings-billing-coupon', 'ModulesSettingsController@billing_coupon')->name('settings-billing-coupon');
 
-Route::get('/settings/banking', 'ModulesSettingsController@banking_index')->name('settings-banking');
-Route::post('/settings/banking', 'ModulesSettingsController@banking_post');
+    Route::get('/settings-banking', 'ModulesSettingsController@banking_index')->name('settings-banking');
+    Route::post('/settings-banking', 'ModulesSettingsController@banking_post');
 
-  
+    Route::get('/settings-access-grants', 'ModulesSettingsController@access_grants_index')->name('settings-access-grants');
+    Route::post('/settings-access-grants', 'ModulesSettingsController@access_grants_post');
+    Route::get('/settings-access-grants-search', 'ModulesSettingsController@access_grants_search')->name('settings-access-grants-search');
+    Route::delete('/settings-access-grants/{id}', 'ModulesSettingsController@access_grants_delete');
+
+    Route::get('/settings-subscription', 'ModulesSettingsController@subscription')->name('settings-subscription');
+    Route::post('/settings-subscription-coupon', 'ModulesSettingsController@subscription_coupon');
+    Route::post('/settings-subscription-switch', 'ModulesSettingsController@subscription_switch');
+
+
 
 });
 
-Route::group(['middleware' => ['auth']], function () {
+
+//Route::post('/settings', 'Settings@update');
+
+/*Route::group(['middleware' => ['auth']], function () {
     Route::get('/plans', 'UpgradePlan@index')->name('plans');
     Route::get('/subscription', 'Subscription@index')->name('subscription');
     Route::post('/subscription', 'Subscription@post');
 });
 
-/**
- * Route Group for XHR: /xhr/...
- */
+
 Route::group(['middleware' => ['auth'], 'namespace' => 'Ajax', 'prefix' => 'xhr'], function () {
 	Route::post('/settings', 'Settings@update');
 });
@@ -86,6 +97,6 @@ Route::domain($storeSubDomain)->namespace('WebStore')->middleware(['web_store'])
     Route::post('/xhr/cart', 'Cart@addToCartXhr');
     Route::post('/xhr/cart/checkout', 'Cart@checkoutXhr');
     Route::put('/xhr/cart/update-quantities', 'Cart@updateCartQuantitiesXhr');
-});
+});*/
 
 ?>

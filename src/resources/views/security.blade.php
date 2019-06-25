@@ -4,14 +4,14 @@
 @endsection
 @section('body_content_main')
 @include('layouts.blocks.tabler.alert')
-<div class="row" id="personal-profile">
+<div class="row" id="security-profile">
 
 	@include('layouts.blocks.tabler.sub-menu')
 
-	<div class="col-md-7" >
+	<div class="col-md-9">
 		<div class="row">
 
-			<div class="col-lg-10">
+			<div class="col-md-12">
               <form class="card" action="" method="post">
               	{{ csrf_field() }}
                 <div class="card-body">
@@ -61,7 +61,7 @@
 
 <script type="text/javascript">
         new Vue({
-            el: '#personal-profile',
+            el: '#security-profile',
             data: {
                 user: {!! json_encode($dorcasUser) !!}
             }

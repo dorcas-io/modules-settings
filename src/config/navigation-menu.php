@@ -1,31 +1,43 @@
 <?php
 return [
-    'settings-security' => [
-    	'title' => 'Security Settings',
-    	'route' => 'settings-security'
-    ],
-    'settings-billing' => [
-    	'title' => 'Subscriptions &amp; Billing',
-    	'route' => 'settings-billing'
+    'settings-subscription' => [
+        'title' => 'Subscriptions',
+        'route' => 'settings-subscription',
+        'icon' => 'fe fe-file-text'
     ],
     'settings-account' => [
-    	'title' => 'Personal Settings',
-    	'route' => 'settings-personal'
+        'title' => 'Personal',
+        'route' => 'settings-personal',
+        'icon' => 'fe fe-user',
+    ],
+    'settings-security' => [
+    	'title' => 'Security',
+    	'route' => 'settings-security',
+        'icon' => 'fe fe-lock',
+    ],
+    'settings-billing' => [
+    	'title' => 'Billing',
+    	'route' => 'settings-billing',
+        'icon' => 'fe fe-credit-card',
     ],
     'settings-business' => [
-    	'title' => 'Business Settings',
-    	'route' => 'settings-business'
+    	'title' => 'Business',
+    	'route' => 'settings-business',
+        'icon' => 'fe fe-briefcase',
     ],
     'settings-customization' => [
-    	'title' => 'Customization Settings',
-    	'route' => 'settings-customization'
+    	'title' => 'Customization',
+    	'route' => 'settings-customization',
+        'icon' => 'fe fe-layout',
+    ],
+    'settings-banking' => [
+        'title' => 'Banking',
+        'route' => 'settings-banking',
+        'icon' => 'fe fe-home',
     ],
     'settings-access-grants' => [
         'title' => 'Access Grants',
-        'route' => 'access-grants'
-    ],
-    'settings-banking' => [
-        'title' => 'Banking Settings',
-        'route' => 'settings-banking'
+        'route' => 'settings-access-grants',
+        'icon' => 'fe fe-unlock',
     ]
 ];

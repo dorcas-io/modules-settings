@@ -36,6 +36,11 @@ class ModulesSettingsController extends Controller {
 
     public function business_index(Request $request, Sdk $sdk)
     {
+        $this->data['page']['title'] .= ' &rsaquo; Business';
+        $this->data['header']['title'] = 'Business Settings';
+        $this->data['selectedSubMenu'] = 'settings-business';
+        $this->data['submenuAction'] = '';
+
         $this->setViewUiResponse($request);
         $this->data['company'] = $company = $request->user()->company(true, true);
         # get the company information
@@ -113,6 +118,10 @@ class ModulesSettingsController extends Controller {
 
     public function personal_index(Request $request)
     {
+        $this->data['page']['title'] .= ' &rsaquo; Personal';
+        $this->data['header']['title'] = 'Personal Settings';
+        $this->data['selectedSubMenu'] = 'settings-personal';
+        $this->data['submenuAction'] = '';
         $this->setViewUiResponse($request);
         return view('modules-settings::personal', $this->data);
     }
@@ -156,6 +165,11 @@ class ModulesSettingsController extends Controller {
 
     public function security_index(Request $request)
     {
+        $this->data['page']['title'] .= ' &rsaquo; Security';
+        $this->data['header']['title'] = 'Security Settings';
+        $this->data['selectedSubMenu'] = 'settings-security';
+        $this->data['submenuAction'] = '';
+
         $this->setViewUiResponse($request);
         return view('modules-settings::security', $this->data);
     }
@@ -181,7 +195,7 @@ class ModulesSettingsController extends Controller {
             if (!$query->isSuccessful()) {
                 throw new \RuntimeException($query->getErrors()[0]['title']);
             }
-            $response = (tabler_ui_html_response(['Successfully updated profile information']))->setType(UiResponse::TYPE_SUCCESS);
+            $response = (tabler_ui_html_response(['Successfully changed your password']))->setType(UiResponse::TYPE_SUCCESS);
         } catch (\Exception $e) {
             $response = (tabler_ui_html_response([$e->getMessage()]))->setType(UiResponse::TYPE_ERROR);
         }
@@ -190,6 +204,11 @@ class ModulesSettingsController extends Controller {
 
     public function customization_index(Request $request, Sdk $sdk)
     {
+        $this->data['page']['title'] .= ' &rsaquo; Customization';
+        $this->data['header']['title'] = 'Customization Settings';
+        $this->data['selectedSubMenu'] = 'settings-customization';
+        $this->data['submenuAction'] = '';
+
         $this->setViewUiResponse($request);
         $this->data['company'] = $company = $request->user()->company(true, true);
         # get the company information
@@ -231,6 +250,11 @@ class ModulesSettingsController extends Controller {
 
     public function billing_index(Request $request, Sdk $sdk)
     {
+        $this->data['page']['title'] .= ' &rsaquo; Billing';
+        $this->data['header']['title'] = 'Billing Settings';
+        $this->data['selectedSubMenu'] = 'settings-billing';
+        $this->data['submenuAction'] = '';
+
         $this->setViewUiResponse($request);
         $this->data['company'] = $company = $request->user()->company(true, true);
         # get the company information
@@ -283,11 +307,54 @@ class ModulesSettingsController extends Controller {
         return redirect(url()->current())->with('UiResponse', $response);
     }
 
-    
+
+    /**
+     * @param Request $request
+     * @param Sdk     $sdk
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function billing_coupon(Request $request, Sdk $sdk)
+    {
+        $this->validate($request, [
+            'coupon' => 'required_with:redeem_coupon|string|max:30'
+        ]);
+        # validate the request
+        $response = null;
+        try {
+            
+            if ($request->has('redeem_coupon')) {
+                # to reserve a subdomain
+                $response = $sdk->createCouponResource($request->input('coupon'))
+                                ->addBodyParam('select_using', 'code')
+                                ->send('post', ['redeem']);
+                # send the request
+                if (!$response->isSuccessful()) {
+                    # it failed
+                    $message = $response->errors[0]['title'] ?? '';
+                    throw new \RuntimeException('Failed while redeeming the coupon. ' . $message);
+                }
+                $response = (material_ui_html_response(['Successfully performed upgrade/extension on plan.']))->setType(UiResponse::TYPE_SUCCESS);
+            
+            }
+        } catch (ServerException $e) {
+            $message = json_decode((string) $e->getResponse()->getBody(), true);
+            $response = (tabler_ui_html_response([$message['message']]))->setType(UiResponse::TYPE_ERROR);
+        } catch (\Exception $e) {
+            $response = (tabler_ui_html_response([$e->getMessage()]))->setType(UiResponse::TYPE_ERROR);
+        }
+        return redirect(url()->current())->with('UiResponse', $response);
+    }    
 
 
     public function banking_index(Request $request, Sdk $sdk)
     {
+        $this->data['page']['title'] .= ' &rsaquo; Banking';
+        $this->data['header']['title'] = 'Banking Settings';
+        $this->data['selectedSubMenu'] = 'settings-banking';
+        $this->data['submenuAction'] = '';
+
         $this->setViewUiResponse($request);
         $accounts = $this->getBankAccounts($sdk);
         if (!empty($accounts) && $accounts->count() > 0) {
@@ -354,10 +421,223 @@ class ModulesSettingsController extends Controller {
     
 
 
+    public function access_grants_index(Request $request)
+    {
+        $this->data['page']['title'] .= ' &rsaquo; Access Grants';
+        $this->data['header']['title'] = 'Access Grants';
+        $this->data['selectedSubMenu'] = 'settings-access-grants';
+        $this->data['submenuAction'] = '';
+
+        $this->setViewUiResponse($request);
+        $this->data['availableModules'] = HomeController::SETUP_UI_COMPONENTS;
+        return view('modules-settings::access-grants', $this->data);
+    }
+    
+    /**
+     * @param Request $request
+     * @param Sdk     $sdk
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function access_grants_post(Request $request, Sdk $sdk)
+    {
+        $this->validate($request, [
+            'business_id' => 'required|string',
+            'modules' => 'required|array',
+            'modules.*' => 'required|string'
+        ]);
+        # validate the request
+        try {
+            $query = $sdk->createCompanyResource($request->input('business_id'));
+            $data = $request->only(['modules']);
+            foreach ($data as $key => $value) {
+                $query->addBodyParam($key, $value);
+            }
+            $query = $query->send('post', ['access-grant-requests']);
+            # send the request
+            if (!$query->isSuccessful()) {
+                $message = $response->errors[0]['title'] ?? '';
+                throw new \RuntimeException('Failed while sending the request. '.$message);
+            }
+            $response = (tabler_ui_html_response(['Successfully sent the request.']))->setType(UiResponse::TYPE_SUCCESS);
+        } catch (\Exception $e) {
+            $response = (tabler_ui_html_response([$e->getMessage()]))->setType(UiResponse::TYPE_ERROR);
+        }
+        return redirect(url()->current())->with('UiResponse', $response);
+    }
+
+
+    /**
+     * @param Request $request
+     * @param Sdk     $sdk
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function access_grants_search(Request $request, Sdk $sdk)
+    {
+        $search = $request->query('search');
+        $sort = $request->query('sort', '');
+        $order = $request->query('order', 'asc');
+        $offset = (int) $request->query('offset', 0);
+        $limit = (int) $request->query('limit', 10);
+        # get the request parameters
+        $resource = $sdk->createCompanyService();
+        $resource = $resource->addQueryArgument('limit', $limit)
+                                ->addQueryArgument('page', get_page_number($offset, $limit));
+        if (!empty($search)) {
+            $resource->addQueryArgument('search', $search);
+        }
+        if ($request->has('statuses')) {
+            $resource->addQueryArgument('statuses', $request->input('statuses'));
+        }
+        $response = $resource->send('get', ['access-grant-requests']);
+        # make the request
+        if (!$response->isSuccessful()) {
+            // do something here
+            throw new RecordNotFoundException($response->errors[0]['title'] ?? 'Could not find any matching requests.');
+        }
+        $this->data['total'] = $response->meta['pagination']['total'] ?? 0;
+        # set the total
+        $this->data['rows'] = $response->data;
+        # set the data
+        return response()->json($this->data);
+    }
+    
+    /**
+     * @param Request $request
+     * @param Sdk     $sdk
+     * @param string  $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function access_grants_delete(Request $request, Sdk $sdk, string $id)
+    {
+        $resource = $sdk->createCompanyService();
+        $response = $resource->send('delete', ['access-grant-requests/' . $id]);
+        # make the request
+        if (!$response->isSuccessful()) {
+            // do something here
+            throw new RecordNotFoundException($response->errors[0]['title'] ?? 'Could not find delete the requests.');
+        }
+        $this->data = $response->getData();
+        return response()->json($this->data);
+    }
+    
+    /**
+     * @param Request $request
+     * @param Sdk     $sdk
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function searchByUser(Request $request, Sdk $sdk)
+    {
+        $search = $request->query('search');
+        $sort = $request->query('sort', '');
+        $order = $request->query('order', 'asc');
+        $offset = (int) $request->query('offset', 0);
+        $limit = (int) $request->query('limit', 10);
+        # get the request parameters
+        $resource = $sdk->createProfileService();
+        $resource = $resource->addQueryArgument('limit', $limit)
+                                ->addQueryArgument('page', get_page_number($offset, $limit));
+        if (!empty($search)) {
+            $resource->addQueryArgument('search', $search);
+        }
+        if ($request->has('statuses')) {
+            $resource->addQueryArgument('statuses', $request->input('statuses'));
+        }
+        $response = $resource->send('get', ['access-requests']);
+        # make the request
+        if (!$response->isSuccessful()) {
+            // do something here
+            throw new RecordNotFoundException($response->errors[0]['title'] ?? 'Could not find any matching requests.');
+        }
+        $json = json_decode($response->getRawResponse(), true);
+        return response()->json($json);
+    }
+    
+    /**
+     * @param Request $request
+     * @param Sdk     $sdk
+     * @param string  $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function deleteRequestForUser(Request $request, Sdk $sdk, string $id)
+    {
+        $resource = $sdk->createProfileService();
+        $response = $resource->send('delete', ['access-requests/' . $id]);
+        # make the request
+        if (!$response->isSuccessful()) {
+            // do something here
+            throw new RecordNotFoundException($response->errors[0]['title'] ?? 'Could not find delete the requests.');
+        }
+        $this->data = $response->getData();
+        return response()->json($this->data);
+    }
+
+
+
+    public function subscription(Request $request, Sdk $sdk)
+    {
+        $this->data['page']['title'] .= ' &rsaquo; Subscription';
+        $this->data['header']['title'] = 'Subscription';
+        $this->data['selectedSubMenu'] = 'settings-subscription';
+        $this->data['submenuAction'] = '';
+
+        $this->setViewUiResponse($request);
+        $plans = config('dorcas.plans');
+        # get the plans configuration
+        $dorcasPlans = $this->getPricingPlans($sdk);
+        # get the plans from Dorcas
+        $pricingPlans = [];
+        # the pricing plans
+        foreach ($plans as $name => $plan) {
+            $live = $dorcasPlans->where('name', $name)->first();
+            # get the plan
+            if (empty($live)) {
+                continue;
+            }
+            $temp = array_merge($plan, ['name' => $name]);
+            $temp['profile'] = $live;
+            $pricingPlans[] = $temp;
+        }
+        $this->data['plans'] = collect($pricingPlans)->map(function ($plan) {
+            return (object) $plan;
+        });
+        return view('modules-settings::subscription', $this->data);
+    }
     
 
-
-
+    /**
+     * @param Request $request
+     * @param Sdk     $sdk
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function subscription_switch(Request $request, Sdk $sdk)
+    {
+        $plans = array_keys(config('dorcas.plans'));
+        # the allowed keys
+        $this->validate($request, [
+            'plan' => 'required|string|in:'.implode(',', $plans)
+        ]);
+        # validate the request
+        $company = $request->user()->company(true, true);
+        # get the company
+        $upgradeQuery = $sdk->createCompanyResource($company->id)->addBodyParam('plan', $request->plan)
+                                                                ->send('post', ['update-plan']);
+        if (!$upgradeQuery->isSuccessful()) {
+            $message = $upgradeQuery->getErrors()[0]['title'] ?? 'Failed while trying to update your account plan.';
+            throw new \RuntimeException($message);
+        }
+        # next up - we need to update the company information
+        return response()->json($upgradeQuery->getData());
+    }
 
 
 }

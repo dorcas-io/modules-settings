@@ -13,9 +13,39 @@
 	<div class="col-md-9">
 		<div class="row">
 
-			<div class="col-md-6 col-xl-4">
+			<div class="col-md-6 col-lg-4">
+				<div class="card">
+					<div class="card-status bg-blue"></div>
+					<div class="card-header">
+						<h3 class="card-title">Personal Settings</h3>
+						<div class="card-options">
+							<a href="#" class="btn btn-primary btn-sm">Edit</a>
+						</div>
+					</div>
+					<div class="card-body">
+						Manage Personal settings such as <strong>Bio Profile</strong> &amp; <strong>Contact Information</strong>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-6 col-lg-4">
 				<div class="card">
 					<div class="card-status bg-green"></div>
+					<div class="card-header">
+						<h3 class="card-title">Subscriptions</h3>
+						<div class="card-options">
+							<a href="#" class="btn btn-primary btn-sm">Edit</a>
+						</div>
+					</div>
+					<div class="card-body">
+						Manage settings such as <strong>Subscription  and Downgrades</strong>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-6 col-lg-4">
+				<div class="card">
+					<div class="card-status bg-red"></div>
 					<div class="card-header">
 						<h3 class="card-title">Security Settings</h3>
 						<div class="card-options">
@@ -28,40 +58,24 @@
 				</div>
 			</div>
 
-			@if (empty($viewMode) || $viewMode === 'business')
-			<div class="col-md-6 col-xl-4">
+			<div class="col-md-6 col-lg-4">
 				<div class="card">
-					<div class="card-status bg-orange"></div>
+					<div class="card-status bg-green"></div>
 					<div class="card-header">
-						<h3 class="card-title">Subscriptions &amp; Billing</h3>
+						<h3 class="card-title">Billing</h3>
 						<div class="card-options">
 							<a href="#" class="btn btn-primary btn-sm">Edit</a>
 						</div>
 					</div>
 					<div class="card-body">
-						Manage settings such as <strong>Subscription  and Downgrades</strong>
+						Manage settings such as <strong>auto renewals</strong>
 					</div>
 				</div>
 			</div>
-			@endif
 
-			<div class="col-md-6 col-xl-4">
+			<div class="col-md-6 col-lg-4">
 				<div class="card">
-					<div class="card-status bg-red"></div>
-					<div class="card-header">
-						<h3 class="card-title">Personal Settings</h3>
-						<div class="card-options">
-							<a href="#" class="btn btn-primary btn-sm">Edit</a>
-						</div>
-					</div>
-					<div class="card-body">
-						Manage Personal settings such as <strong>Bio Profile</strong> &amp; <strong>Contact Information</strong>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-6 col-xl-4">
-				<div class="card">
-					<div class="card-status bg-yellow"></div>
+					<div class="card-status bg-blue"></div>
 					<div class="card-header">
 						<h3 class="card-title">Business Settings</h3>
 						<div class="card-options">
@@ -73,7 +87,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-6 col-xl-4">
+			<div class="col-md-6 col-lg-4">
 				<div class="card">
 					<div class="card-status bg-teal"></div>
 					<div class="card-header">
@@ -87,7 +101,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-6 col-xl-4">
+			<div class="col-md-6 col-lg-4">
 				<div class="card">
 					<div class="card-status bg-purple"></div>
 					<div class="card-header">
@@ -102,9 +116,9 @@
 				</div>
 			</div>
 
-			<div class="col-md-6 col-xl-4">
+			<div class="col-md-6 col-lg-4">
 				<div class="card">
-					<div class="card-status bg-teal"></div>
+					<div class="card-status bg-cyan"></div>
 					<div class="card-header">
 						<h3 class="card-title">Banking Settings</h3>
 						<div class="card-options">
