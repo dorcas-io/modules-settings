@@ -1,7 +1,7 @@
 <?php
 return [
     'settings-subscription' => [
-        'title' => 'Subscriptions',
+        'title' => 'Subscription',
         'route' => 'settings-subscription',
         'icon' => 'fe fe-file-text'
     ],

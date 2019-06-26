@@ -596,6 +596,11 @@ class ModulesSettingsController extends Controller {
         $pricingPlans = [];
         # the pricing plans
         foreach ($plans as $name => $plan) {
+            /*later on we are going to add selectively,
+            - ree option,
+            - 1 or more paid and
+            - 1 or more belonging to your partner id
+            */
             $live = $dorcasPlans->where('name', $name)->first();
             # get the plan
             if (empty($live)) {
@@ -624,12 +629,14 @@ class ModulesSettingsController extends Controller {
         $plans = array_keys(config('dorcas.plans'));
         # the allowed keys
         $this->validate($request, [
-            'plan' => 'required|string|in:'.implode(',', $plans)
+            'plan' => 'required|string|in:'.implode(',', $plans),
+            'expiry_date'  => 'nullable|date_format:Y-m-d',
         ]);
         # validate the request
         $company = $request->user()->company(true, true);
         # get the company
         $upgradeQuery = $sdk->createCompanyResource($company->id)->addBodyParam('plan', $request->plan)
+        ->addBodyParam('access_expires_at', $request->expiry_date)
                                                                 ->send('post', ['update-plan']);
         if (!$upgradeQuery->isSuccessful()) {
             $message = $upgradeQuery->getErrors()[0]['title'] ?? 'Failed while trying to update your account plan.';
