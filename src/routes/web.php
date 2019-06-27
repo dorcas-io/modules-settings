@@ -4,7 +4,7 @@ use GuzzleHttp\Psr7\Uri;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-$request = app()->make('request');
+/*$request = app()->make('request');
 $currentHost = $request->header('host');
 $defaultUri = new Uri(config('app.url'));
 try {
@@ -13,8 +13,10 @@ try {
     $domainInfo = null;
 }
 $storeSubDomain = !empty($domainInfo) && $domainInfo->getService() === 'store' ?
-    $currentHost : 'store' . $defaultUri->getHost();
+    $currentHost : 'store' . $defaultUri->getHost();*/
+//use Illuminate\Support\Facades\Validator;
 
+//use Carbon\Carbon;
 
 Route::group(['namespace' => 'Dorcas\ModulesSettings\Http\Controllers', 'prefix' => 'mse', 'middleware' => ['web','auth']], function() {
     Route::get('/settings-main', 'ModulesSettingsController@index')->name('settings-main');

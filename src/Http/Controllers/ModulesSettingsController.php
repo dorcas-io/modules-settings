@@ -628,10 +628,44 @@ class ModulesSettingsController extends Controller {
     {
         $plans = array_keys(config('dorcas.plans'));
         # the allowed keys
-        $this->validate($request, [
-            'plan' => 'required|string|in:'.implode(',', $plans),
-            'expiry_date'  => 'nullable|date_format:Y-m-d',
+        $vdata = $this->validate($request, [
+            'plan' => 'required|string|in:'.implode(',', $plans)
         ]);
+
+        # validate the request
+        $company = $request->user()->company(true, true);
+        # get the company
+        $upgradeQuery = $sdk->createCompanyResource($company->id)->addBodyParam('plan', $request->plan)
+                                                                ->send('post', ['update-plan']);
+        
+        $request->session()->put('dorcas_transaction_purpose', 'subscription');
+        $request->session()->put('dorcas_subscription_expiry', $request->expiry_date);
+        
+        if (!$upgradeQuery->isSuccessful()) {
+            $message = $upgradeQuery->getErrors()[0]['title'] ?? 'Failed while trying to update your account plan.';
+            throw new \RuntimeException($message);
+        }
+        # next up - we need to update the company information
+        return response()->json($upgradeQuery->getData());
+    }
+
+
+    /**
+     * @param Request $request
+     * @param Sdk     $sdk
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function subscription_extend(Request $request, Sdk $sdk)
+    {
+        $plans = array_keys(config('dorcas.plans'));
+        # the allowed keys
+        /*$vdata = $this->validate($request, [
+            'plan' => 'required|string|in:'.implode(',', $plans),
+            'expiry_date'  => 'nullable|date|date_format:Y-m-d',
+        ]);*/
+        //dd($vdata);
         # validate the request
         $company = $request->user()->company(true, true);
         # get the company
@@ -645,6 +679,5 @@ class ModulesSettingsController extends Controller {
         # next up - we need to update the company information
         return response()->json($upgradeQuery->getData());
     }
-
 
 }

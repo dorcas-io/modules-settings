@@ -34,7 +34,7 @@
 		    					<i class="fe fe-calendar"></i>
 		    				</span>
 		    				<div>
-		    					<h4 class="m-0">@{{ moment(business.access_expires_at, 'DD MMM, YY') }}</h4>
+		    					<h4 class="m-0">@{{ moment(business.access_expires_at, 'DD MMM, YYYY') }}</h4>
 		    					<small class="text-muted">Service Plan Expiry</small>
 		    				</div>
 		    			</div>
@@ -60,7 +60,7 @@
 		    					<i class="fe fe-calendar"></i>
 		    				</span>
 		    				<div>
-		    					<h4 class="m-0">@{{ nextAutoRenew.format('DD MMM, YY') }}</h4>
+		    					<h4 class="m-0">@{{ nextAutoRenew.format('DD MMM, YYYY') }}</h4>
 		    					<small class="text-muted">Renewal Date</small>
 		    				</div>
 		    			</div>
@@ -158,10 +158,21 @@
                         /*if (moment(this.business.access_expires_at) < moment()) {
                         	console.log ('yes')
                         }*/
-                        console.log(this_plan.name)
-                        console.log(expiry_date)
+                        //console.log(this_plan.name)
+                        //console.log(expiry_date)
                         if (typeof getCookie("ps_index") !== 'undefined' && getCookie("ps_index") === activate_plan_index) {
-		                    axios.post("/mse/settings-subscription-switch", {
+
+                            if (this_plan.name !== 'starter') {
+                                swal("Plan Switch", 'Great! Your plan upgrade was successful', "success");
+                                //window.location = '{{ url()->current() }}';
+                            } else {
+                                swal("Plan Switch", 'Great! Your plan downgrade was successful', "success");
+                                //window.location = '{{ url()->current() }}';
+                            }
+
+
+
+		                    /*axios.post("/mse/settings-subscription-switch", {
 		                        plan: this_plan.name,
 		                        expiry_date: expiry_date
 		                    }).then(function (response) {
@@ -194,15 +205,15 @@
 		                                message = error.message;
 		                            }
 		                            return swal("Action Failed", message, "warning");
-		                        });
+		                        });*/
                         }
 
                     }
                 }, 
             },
             mounted: function() {
-            	console.log(this.plans);
-            	console.log(this.business)
+            	//console.log(this.plans);
+            	//console.log(this.business)
                 this.activateSubscriptionOnPayment();
             }
         })
