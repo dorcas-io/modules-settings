@@ -11,6 +11,7 @@ use Hostville\Dorcas\Sdk;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use App\Dorcas\Hub\Enum\Banks;
+use Carbon\Carbon;
 
 
 class ModulesSettingsController extends Controller {
@@ -18,14 +19,13 @@ class ModulesSettingsController extends Controller {
     public function __construct()
     {
         parent::__construct();
-        parent::__construct();
         $this->data = [
             'page' => ['title' => config('modules-settings.title')],
             'header' => ['title' => 'Settings'],
             'selectedMenu' => 'modules-settings',
             'submenuConfig' => 'navigation-menu.modules-settings.sub-menu',
             'submenuAction' => ''
-        ];  
+        ];
     }
 
     public function index()
@@ -335,7 +335,7 @@ class ModulesSettingsController extends Controller {
                     $message = $response->errors[0]['title'] ?? '';
                     throw new \RuntimeException('Failed while redeeming the coupon. ' . $message);
                 }
-                $response = (material_ui_html_response(['Successfully performed upgrade/extension on plan.']))->setType(UiResponse::TYPE_SUCCESS);
+                $response = (tabler_ui_html_response(['Successfully performed upgrade/extension on plan.']))->setType(UiResponse::TYPE_SUCCESS);
             
             }
         } catch (ServerException $e) {
@@ -344,7 +344,7 @@ class ModulesSettingsController extends Controller {
         } catch (\Exception $e) {
             $response = (tabler_ui_html_response([$e->getMessage()]))->setType(UiResponse::TYPE_ERROR);
         }
-        return redirect(url()->current())->with('UiResponse', $response);
+        return redirect(route('settings-billing'))->with('UiResponse', $response);
     }    
 
 
@@ -678,6 +678,70 @@ class ModulesSettingsController extends Controller {
         }
         # next up - we need to update the company information
         return response()->json($upgradeQuery->getData());
+    }
+
+    /**
+     * @param Request $request
+     * @param Sdk     $sdk
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function extend_subs(Request $request, Sdk $sdk, string $extend_details)
+    {
+            try {
+            $company = $request->user()->company(true, true);
+            # get the company information
+                # update the business information
+                $query = $sdk->createCompanyService()
+                                ->addBodyParam('extend_details', "")
+                                ->send('PUT');
+                # send the request
+                if (!$query->isSuccessful()) {
+                    throw new \RuntimeException('Failed while updating.');
+                }
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Failed while updating.' . $e->getMessage());
+        }
+
+        # next up - we need to update the company information
+        return response()->json($query->getData());
+    }
+
+    /**
+     * @param Request $request
+     * @param Sdk $sdk
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function marketplace_settings(Request $request, Sdk $sdk)
+    {
+        $this->validate($request, [
+            'name' => 'required|string',
+            'enabled' => 'required'
+        ]);
+        # validate the request
+        $response = null;
+        # our request query
+        switch ($request->input('name')) {
+            case 'set_professional_status':
+                $response = $sdk->createProfileService()->addBodyParam('is_professional', (int) $request->enabled)
+                                                        ->send('PUT');
+                break;
+            case 'set_vendor_status':
+                $response = $sdk->createProfileService()->addBodyParam('is_vendor', (int) $request->enabled)
+                                                        ->send('PUT');
+                break;
+            default:
+                break;
+        }
+        if (empty($response)) {
+            throw new \RuntimeException('The request could not be sent, please try again.');
+        }
+        if (!$response->isSuccessful()) {
+            throw new \RuntimeException($response->getErrors()[0]['title']);
+        }
+        return response()->json($response->getData());
     }
 
 }

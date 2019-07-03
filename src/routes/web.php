@@ -50,6 +50,8 @@ Route::group(['namespace' => 'Dorcas\ModulesSettings\Http\Controllers', 'prefix'
     Route::post('/settings-subscription-switch', 'ModulesSettingsController@subscription_switch');
 
 
+    Route::post('/settings-marketplace', 'ModulesSettingsController@marketplace_settings');
+
 
 });
 
