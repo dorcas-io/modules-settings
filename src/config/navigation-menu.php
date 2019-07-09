@@ -39,5 +39,10 @@ return [
         'title' => 'Access Grants',
         'route' => 'settings-access-grants',
         'icon' => 'fe fe-unlock',
+    ],
+    'welcome-setup-overview' => [
+        'title' => 'Setup &amp; Overview',
+        'route' => 'welcome-overview',
+        'icon' => 'fe fe-power',
     ]
 ];
