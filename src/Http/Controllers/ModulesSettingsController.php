@@ -423,8 +423,8 @@ class ModulesSettingsController extends Controller {
 
     public function access_grants_index(Request $request)
     {
-        $this->data['page']['title'] .= ' &rsaquo; Access Grants';
-        $this->data['header']['title'] = 'Access Grants';
+        $this->data['page']['title'] .= ' &rsaquo; Permissions';
+        $this->data['header']['title'] = 'Permissions';
         $this->data['selectedSubMenu'] = 'settings-access-grants';
         $this->data['submenuAction'] = '';
 

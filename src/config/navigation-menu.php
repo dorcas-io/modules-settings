@@ -36,7 +36,7 @@ return [
         'icon' => 'fe fe-home',
     ],
     'settings-access-grants' => [
-        'title' => 'Access Grants',
+        'title' => 'Permissions',
         'route' => 'settings-access-grants',
         'icon' => 'fe fe-unlock',
     ],
