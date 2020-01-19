@@ -237,7 +237,8 @@ class ModulesSettingsController extends Controller {
                                 ->send('post');
                 # send the request
                 if (!$query->isSuccessful()) {
-                    throw new \RuntimeException('Failed while updating your business logo. Please try again.');
+                    throw new \RuntimeException($query->getErrors()[0]['title']);
+                    //throw new \RuntimeException('Failed while updating your business logo. Please try again.');
                 }
                 $message = ['Successfully updated your customisation preference'];
             }
