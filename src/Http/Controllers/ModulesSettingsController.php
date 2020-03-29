@@ -61,7 +61,7 @@ class ModulesSettingsController extends Controller {
             'registration' => 'nullable|string|max:30',
             'phone' => 'required_if:action,update_business|string|max:30',
             'email' => 'required_if:action,update_business|email|max:80',
-            'website' => 'nullable|url|max:80',
+            'website' => 'nullable|string|max:80',
             'address1' => 'required_if:action,update_location|string|max:100',
             'address2' => 'nullable|string|max:100',
             'city' => 'required_if:action,update_location|string|max:100',
