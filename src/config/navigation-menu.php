@@ -41,8 +41,8 @@ return [
         'icon' => 'fe fe-unlock',
     ],
     'welcome-setup-overview' => [
-        'title' => 'Setup &amp; Overview',
-        'route' => 'welcome-overview',
+        'title' => 'Setup &amp; Features',
+        'route' => 'welcome-setup',
         'icon' => 'fe fe-power',
     ]
 ];
