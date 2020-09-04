@@ -11,10 +11,10 @@ class ModulesSettingsServiceProvider extends ServiceProvider {
 		$this->loadViewsFrom(__DIR__.'/resources/views', 'modules-settings');
 		$this->publishes([
 			__DIR__.'/config/modules-settings.php' => config_path('modules-settings.php'),
-		], 'config');
+		], 'dorcas-modules');
 		/*$this->publishes([
 			__DIR__.'/assets' => public_path('vendor/modules-settings')
-		], 'public');*/
+		], 'dorcas-modules');*/
 	}
 
 	public function register()
