@@ -1,5 +1,5 @@
 <?php
-return [
+$menuBilling = [
     'settings-subscription' => [
         'title' => 'Subscription',
         'route' => 'settings-subscription',
@@ -14,11 +14,6 @@ return [
     	'title' => 'Security',
     	'route' => 'settings-security',
         'icon' => 'fe fe-lock',
-    ],
-    'settings-billing' => [
-    	'title' => 'Billing',
-    	'route' => 'settings-billing',
-        'icon' => 'fe fe-credit-card',
     ],
     'settings-business' => [
     	'title' => 'Business',
@@ -46,3 +41,14 @@ return [
         'icon' => 'fe fe-power',
     ]
 ];
+
+if (config('dorcas.edition','business') != "business" && config('dorcas.edition','business') != "community") {
+    $menuBilling['settings-billing'] = [
+        'title' => 'Billing',
+        'route' => 'settings-billing',
+        'icon' => 'fe fe-credit-card',
+    ];
+}
+
+
+return $menuBilling;

@@ -33,9 +33,9 @@ Route::group(['namespace' => 'Dorcas\ModulesSettings\Http\Controllers', 'prefix'
     Route::get('/settings-customization', 'ModulesSettingsController@customization_index')->name('settings-customization');
     Route::post('/settings-customization', 'ModulesSettingsController@customization_post');
 
-    Route::get('/settings-billing', 'ModulesSettingsController@billing_index')->name('settings-billing');
-    Route::post('/settings-billing', 'ModulesSettingsController@billing_post');
-    Route::post('/settings-billing-coupon', 'ModulesSettingsController@billing_coupon')->name('settings-billing-coupon');
+    Route::get('/settings-billing', 'ModulesSettingsController@billing_index')->name('settings-billing')->middleware(['edition_commercial_only']);
+    Route::post('/settings-billing', 'ModulesSettingsController@billing_post')->middleware(['edition_commercial_only']);
+    Route::post('/settings-billing-coupon', 'ModulesSettingsController@billing_coupon')->name('settings-billing-coupon')->middleware(['edition_commercial_only']);
 
     Route::get('/settings-banking', 'ModulesSettingsController@banking_index')->name('settings-banking');
     Route::post('/settings-banking', 'ModulesSettingsController@banking_post');

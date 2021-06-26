@@ -237,8 +237,9 @@ class ModulesSettingsController extends Controller {
                                 ->send('post');
                 # send the request
                 if (!$query->isSuccessful()) {
-                    throw new \RuntimeException($query->getErrors()[0]['title']);
+                    //throw new \RuntimeException($query->getErrors()[0]['title']);
                     //throw new \RuntimeException('Failed while updating your business logo. Please try again.');
+                    throw new \RuntimeException('Failed while updating your business logo: '. $query->getErrors()[0]['title']);
                 }
                 $message = ['Successfully updated your customisation preference'];
             }
@@ -255,6 +256,7 @@ class ModulesSettingsController extends Controller {
         $this->data['header']['title'] = 'Billing Settings';
         $this->data['selectedSubMenu'] = 'settings-billing';
         $this->data['submenuAction'] = '';
+        $this->middleware(['guest','edition_commercial_only']);
 
         $this->setViewUiResponse($request);
         $this->data['company'] = $company = $request->user()->company(true, true);
