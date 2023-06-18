@@ -188,7 +188,7 @@
                 if (this.useAutoComplete) {
                     script.src = `https://maps.googleapis.com/maps/api/js?key=${this.env.CREDENTIAL_GOOGLE_API_KEY}&libraries=places`;
                     script.onload = function() {
-                        initMap();
+                        this.initMap();
                     };
                 } else {
                     script.src = `https://maps.googleapis.com/maps/api/js?key=` + this.env.CREDENTIAL_GOOGLE_API_KEY;
