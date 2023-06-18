@@ -53,7 +53,8 @@ class ModulesSettingsController extends Controller {
         $this->data['countries'] = $this->getCountries($sdk);
         $this->data['location'] = $location;
         $this->data['env'] = [
-            "SETTINGS_COUNTRY" => env('SETTINGS_COUNTRY', 'NG')
+            "SETTINGS_COUNTRY" => env('SETTINGS_COUNTRY', 'NG'),
+            "CREDENTIAL_GOOGLE_API_KEY" => env('CREDENTIAL_GOOGLE_API_KEY', 'ABC'),
         ];
 
         $company_data = $company->extra_data;

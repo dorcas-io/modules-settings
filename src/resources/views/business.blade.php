@@ -115,7 +115,7 @@
                             </div>
                         </div>
                         <div class="row" id="address_map">
-
+                            Loading Map...
                         </div>
                     </div>
                     <div class="card-footer text-right">
