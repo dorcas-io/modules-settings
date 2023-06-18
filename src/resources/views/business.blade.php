@@ -179,7 +179,7 @@
             useAutoComplete: true
         },
         mounted: function() {
-            loadGoogleMaps();
+            this.loadGoogleMaps();
         },
         methods: {
             loadGoogleMaps: function () {
