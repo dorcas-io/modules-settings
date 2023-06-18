@@ -108,7 +108,7 @@
                         </div>
                         <div class="row" >
                             <div class="col-md-12">
-                                <button :disabled="addressIsConfirmed" name="check_address" value="check_address" class="btn btn-success" v-on:click.prevent="addressConfirm">Click To Confirm Address</button>
+                                <button name="check_address" value="check_address" class="btn btn-success" v-on:click.prevent="addressConfirm">Click To Confirm Address</button>
                                 <p>
                                     <em>If the map generated is wrong, adjust the address above and confirm again</em>
                                 </p>
@@ -119,8 +119,8 @@
                         </div>
                     </div>
                     <div class="card-footer text-right">
-                        <input type="hidden" name="latitude" id="latitude" v-model="getLatitude">
-                        <input type="hidden" name="longitude" id="longitude" v-model="getLongitude">
+                        <input type="hidden" name="latitude" id="latitude" v-model="company_data.location.latitude">
+                        <input type="hidden" name="longitude" id="longitude" v-model="company_data.location.longitude">
                         <button :disabled="!addressIsConfirmed" type="submit" name="action" value="update_location" class="btn btn-primary">Update Address</button>
                     </div>
 
@@ -178,11 +178,13 @@
             env: {!! json_encode($env) !!},
             loggedInUser: headerAuthVue.loggedInUser,
             addressIsConfirmed: false,
-            useAutoComplete: true
+            useAutoComplete: true,
+            locationLatitude: 0,
+            locationLongitude: 0
+        },
         },
         mounted: function() {
             this.loadGoogleMaps();
-            console.log(this.company_data);
         },
         computed: {
             getLatitude: function() {
@@ -221,10 +223,13 @@
                 const state = this.states.find( st => st.id === this.location.state.data.id );
                 const country = this.countries.find( co => co.id === this.env.SETTINGS_COUNTRY );
 
-                if (this.getLatitude() > 0 && this.getLongitude > 0) {
+                let retry = false;
+                //let retry = vmSettingsPage.company_data.location.latitude > 0 && vmSettingsPage.company_data.location.longitude > 0;
 
-                    const latitude = this.getLatitude();
-                    const longitude = this.getLongitude();
+                if (retry) {
+
+                    const latitude = vmSettingsPage.company_data.location.latitude;
+                    const longitude = vmSettingsPage.company_data.location.longitude;
 
                     const mapOptions = {
                         center: { lat: latitude, lng: longitude },
@@ -236,7 +241,7 @@
                     const marker = new google.maps.Marker({
                         position: { lat: latitude, lng: longitude },
                         map: map,
-                        title: this.company.name
+                        title: vmSettingsPage.company.name
                     });
 
                 } else {
