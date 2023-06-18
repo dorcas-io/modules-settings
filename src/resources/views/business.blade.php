@@ -171,6 +171,7 @@
         el: '#business-profile',
         data: {
             company: {!! json_encode($company) !!},
+            company_data: {!! json_encode($company_data) !!},
             location: {!! json_encode($location) !!},
             states: {!! json_encode($states) !!},
             countries: {!! json_encode($countries) !!},
@@ -181,19 +182,19 @@
         },
         mounted: function() {
             this.loadGoogleMaps();
-            console.log(this.company);
+            console.log(this.company_data);
         },
         computed: {
             getLatitude: function() {
-                if (typeof company.extra_data.location !== 'undefined' && company.extra_data.location.latitude !== 'undefined') {
-                    return company.extra_data.location.latitude;
+                if (typeof company_data.location !== 'undefined' && company_data.location.latitude !== 'undefined') {
+                    return company_data.location.latitude;
                 } else {
                     return 0;
                 }
             },
             getLongitude: function() {
-                if (typeof company.extra_data.location !== 'undefined' && company.extra_data.location.longitude !== 'undefined') {
-                    return company.extra_data.location.longitude;
+                if (typeof company_data.location !== 'undefined' && company_data.location.longitude !== 'undefined') {
+                    return company_data.location.longitude;
                 } else {
                     return 0;
                 }

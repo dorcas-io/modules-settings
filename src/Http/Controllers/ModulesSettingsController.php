@@ -57,10 +57,12 @@ class ModulesSettingsController extends Controller {
             "CREDENTIAL_GOOGLE_API_KEY" => env('CREDENTIAL_GOOGLE_API_KEY', 'ABC'),
         ];
 
-        $company_data = $company->extra_data;
+        $company_data = (array) $company->extra_data;
+
+        $this->data['company_data'] = $company_data;
 
         if ( empty($company_data['location']) ) {
-            $this->data['company']['extra_data']['location'] = ['latitude' => 0, 'longitude' => 0];
+            $this->data['company_data']['location'] = ['latitude' => 0, 'longitude' => 0];
         }
         
         return view('modules-settings::business', $this->data);
