@@ -186,15 +186,15 @@
         },
         computed: {
             getLatitude: function() {
-                if (typeof company_data.location !== 'undefined' && company_data.location.latitude !== 'undefined') {
-                    return company_data.location.latitude;
+                if (typeof this.company_data.location !== 'undefined' && this.company_data.location.latitude !== 'undefined') {
+                    return this.company_data.location.latitude;
                 } else {
                     return 0;
                 }
             },
             getLongitude: function() {
-                if (typeof company_data.location !== 'undefined' && company_data.location.longitude !== 'undefined') {
-                    return company_data.location.longitude;
+                if (typeof this.company_data.location !== 'undefined' && this.company_data.location.longitude !== 'undefined') {
+                    return this.company_data.location.longitude;
                 } else {
                     return 0;
                 }
@@ -221,25 +221,47 @@
                 const state = this.states.find( st => st.id === this.location.state.data.id );
                 const country = this.countries.find( co => co.id === this.env.SETTINGS_COUNTRY );
 
-                const geocoder = new google.maps.Geocoder();
-                const mapOptions = {
-                    zoom: 15,
-                    center: new google.maps.LatLng(0, 0) // Default center
-                };
-                const map = new google.maps.Map(document.getElementById('address_map'), mapOptions);
+                if (this.getLatitude() > 0 && this.getLongitude > 0) {
 
-                const addressString = `${address}, ${state}, ${country}`;
-                geocoder.geocode({ address: addressString }, function(results, status) {
-                    if (status === google.maps.GeocoderStatus.OK) {
-                        map.setCenter(results[0].geometry.location);
-                        new google.maps.Marker({
-                            map: map,
-                            position: results[0].geometry.location
-                        });
-                    } else {
-                        console.log('Geocode was not successful for the following reason: ' + status);
-                    }
-                });
+                    const latitude = this.getLatitude();
+                    const longitude = this.getLongitude();
+
+                    const mapOptions = {
+                        center: { lat: latitude, lng: longitude },
+                        zoom: 8
+                    };
+                    const map = new google.maps.Map(document.getElementById('address_map'), mapOptions);
+
+                    // Optionally, you can add a marker at the specified coordinates
+                    const marker = new google.maps.Marker({
+                        position: { lat: latitude, lng: longitude },
+                        map: map,
+                        title: this.company.name
+                    });
+
+                } else {
+
+                    const geocoder = new google.maps.Geocoder();
+                    const mapOptions = {
+                        zoom: 15,
+                        center: new google.maps.LatLng(0, 0) // Default center
+                    };
+                    const map = new google.maps.Map(document.getElementById('address_map'), mapOptions);
+
+                    const addressString = `${address}, ${state}, ${country}`;
+                    geocoder.geocode({ address: addressString }, function(results, status) {
+                        if (status === google.maps.GeocoderStatus.OK) {
+                            map.setCenter(results[0].geometry.location);
+                            new google.maps.Marker({
+                                map: map,
+                                position: results[0].geometry.location
+                            });
+                        } else {
+                            console.log('Geocode was not successful for the following reason: ' + status);
+                        }
+                    });
+
+                }
             },
             addressConfirm: function () {
                 this.addressIsConfirmed = true;
