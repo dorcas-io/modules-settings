@@ -182,7 +182,6 @@
             locationLatitude: 0,
             locationLongitude: 0
         },
-        },
         mounted: function() {
             this.loadGoogleMaps();
         },
