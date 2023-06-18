@@ -174,12 +174,14 @@
             location: {!! json_encode($location) !!},
             states: {!! json_encode($states) !!},
             countries: {!! json_encode($countries) !!},
+            env: {!! json_encode($env) !!},
             loggedInUser: headerAuthVue.loggedInUser,
             addressIsConfirmed: false,
             useAutoComplete: true
         },
         mounted: function() {
             this.loadGoogleMaps();
+            console.log(this.company);
         },
         methods: {
             loadGoogleMaps: function () {
