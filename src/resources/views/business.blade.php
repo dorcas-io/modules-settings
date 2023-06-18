@@ -106,9 +106,22 @@
                             </div>
                         
                         </div>
+                        <div class="row" >
+                            <div class="col-md-12">
+                                <button :disabled="addressIsConfirmed" name="check_address" value="check_address" class="btn btn-success" v-on:click.prevent="addressConfirm">Click To Confirm Address</button>
+                                <p>
+                                    <em>If the map generated is wrong, adjust the address above and confirm again</em>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row" id="address_map">
+
+                        </div>
                     </div>
                     <div class="card-footer text-right">
-                        <button type="submit" name="action" value="update_location" class="btn btn-primary">Update Address</button>
+                        <input type="hidden" name="latitude" id="latitude" v-model="company.extra_data.location.latitude">
+                        <input type="hidden" name="longitude" id="longitude" v-model="company.extra_data.location.longitude">
+                        <button :disabled="!addressIsConfirmed" type="submit" name="action" value="update_location" class="btn btn-primary">Update Address</button>
                     </div>
 
                 </form>
@@ -160,7 +173,58 @@
             company: {!! json_encode($company) !!},
             location: {!! json_encode($location) !!},
             states: {!! json_encode($states) !!},
+            countries: {!! json_encode($countries) !!},
             loggedInUser: headerAuthVue.loggedInUser,
+            addressIsConfirmed: false,
+            useAutoComplete: true
+        },
+        mounted: function() {
+            loadGoogleMaps();
+        },
+        methods: {
+            loadGoogleMaps: function () {
+                // Load the Google Maps API script
+                const script = document.createElement('script');
+                if (this.useAutoComplete) {
+                    script.src = `https://maps.googleapis.com/maps/api/js?key=${this.env.CREDENTIAL_GOOGLE_API_KEY}&libraries=places`;
+                    script.onload = function() {
+                        initMap();
+                    };
+                } else {
+                    script.src = `https://maps.googleapis.com/maps/api/js?key=` + this.env.CREDENTIAL_GOOGLE_API_KEY;
+                }
+                script.defer = true;
+                document.head.appendChild(script);
+            },
+            initMap: function () {
+                // Initialize and display the map
+                const address = `${this.location.address1}, ${this.location.address2}, ${this.location.city}`;
+                const state = this.states.find( st => st.id === this.location.state.data.id );
+                const country = this.countries.find( co => co.id === this.env.SETTINGS_COUNTRY );
+
+                const geocoder = new google.maps.Geocoder();
+                const mapOptions = {
+                    zoom: 15,
+                    center: new google.maps.LatLng(0, 0) // Default center
+                };
+                const map = new google.maps.Map(document.getElementById('address_map'), mapOptions);
+
+                const addressString = `${address}, ${state}, ${country}`;
+                geocoder.geocode({ address: addressString }, function(results, status) {
+                    if (status === google.maps.GeocoderStatus.OK) {
+                        map.setCenter(results[0].geometry.location);
+                        new google.maps.Marker({
+                            map: map,
+                            position: results[0].geometry.location
+                        });
+                    } else {
+                        console.log('Geocode was not successful for the following reason: ' + status);
+                    }
+                });
+            },
+            addressConfirm: function () {
+                this.addressIsConfirmed = true;
+            }
         }
     })
 </script>
