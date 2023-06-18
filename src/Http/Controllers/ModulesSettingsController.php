@@ -59,7 +59,7 @@ class ModulesSettingsController extends Controller {
 
         $company_data = $company->extra_data;
 
-        if ( !empty($company_data['location']) ) {
+        if ( empty($company_data['location']) ) {
             $this->data['company']['extra_data']['location'] = ['latitude' => 0, 'longitude' => 0];
         }
         

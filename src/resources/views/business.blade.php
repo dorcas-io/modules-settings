@@ -119,8 +119,8 @@
                         </div>
                     </div>
                     <div class="card-footer text-right">
-                        <input type="hidden" name="latitude" id="latitude" v-model="company.extra_data.location.latitude">
-                        <input type="hidden" name="longitude" id="longitude" v-model="company.extra_data.location.longitude">
+                        <input type="hidden" name="latitude" id="latitude" v-model="getLatitude">
+                        <input type="hidden" name="longitude" id="longitude" v-model="getLongitude">
                         <button :disabled="!addressIsConfirmed" type="submit" name="action" value="update_location" class="btn btn-primary">Update Address</button>
                     </div>
 
@@ -182,6 +182,22 @@
         mounted: function() {
             this.loadGoogleMaps();
             console.log(this.company);
+        },
+        computed: {
+            getLatitude: function() {
+                if (typeof company.extra_data.location !== 'undefined' && company.extra_data.location.latitude !== 'undefined') {
+                    return company.extra_data.location.latitude;
+                } else {
+                    return 0;
+                }
+            },
+            getLongitude: function() {
+                if (typeof company.extra_data.location !== 'undefined' && company.extra_data.location.longitude !== 'undefined') {
+                    return company.extra_data.location.longitude;
+                } else {
+                    return 0;
+                }
+            },
         },
         methods: {
             loadGoogleMaps: function () {
