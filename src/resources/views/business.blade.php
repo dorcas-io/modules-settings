@@ -167,7 +167,7 @@
 @section('body_js')
 
 <script type="text/javascript">
-    new Vue({
+    let vmSettingsPage = new Vue({
         el: '#business-profile',
         data: {
             company: {!! json_encode($company) !!},
@@ -207,7 +207,7 @@
                 if (this.useAutoComplete) {
                     script.src = `https://maps.googleapis.com/maps/api/js?key=${this.env.CREDENTIAL_GOOGLE_API_KEY}&libraries=places`;
                     script.onload = function() {
-                        this.initMap();
+                        vmSettingsPage.initMap();
                     };
                 } else {
                     script.src = `https://maps.googleapis.com/maps/api/js?key=` + this.env.CREDENTIAL_GOOGLE_API_KEY;
@@ -264,6 +264,7 @@
                 }
             },
             addressConfirm: function () {
+                this.initMap();
                 this.addressIsConfirmed = true;
             }
         }
