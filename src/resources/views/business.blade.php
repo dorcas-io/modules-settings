@@ -178,7 +178,7 @@
             env: {!! json_encode($env) !!},
             loggedInUser: headerAuthVue.loggedInUser,
             addressIsConfirmed: false,
-            useAutoComplete: true,
+            useAutoComplete: false,
             locationLatitude: 0,
             locationLongitude: 0
         },
@@ -211,10 +211,11 @@
                         vmSettingsPage.initMap();
                     };
                 } else {
-                    script.src = `https://maps.googleapis.com/maps/api/js?key=` + this.env.CREDENTIAL_GOOGLE_API_KEY;
+                    script.src = `https://maps.googleapis.com/maps/api/js?key=` + this.env.CREDENTIAL_GOOGLE_API_KEY + `&callback=Function.prototype`;
                 }
                 script.defer = true;
                 document.head.appendChild(script);
+                console.log(this.env.CREDENTIAL_GOOGLE_API_KEY)
             },
             initMap: function () {
                 // Initialize and display the map
@@ -253,7 +254,9 @@
                     const map = new google.maps.Map(document.getElementById('address_map'), mapOptions);
 
                     const addressString = `${address}, ${state}, ${country}`;
+                    console.log(addressString)
                     geocoder.geocode({ address: addressString }, function(results, status) {
+                        console.log(status, results);
                         if (status === google.maps.GeocoderStatus.OK) {
                             map.setCenter(results[0].geometry.location);
                             new google.maps.Marker({
