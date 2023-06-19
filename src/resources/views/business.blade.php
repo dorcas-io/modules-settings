@@ -106,12 +106,48 @@
                             </div>
                         
                         </div>
-                        <div class="row" >
-                            <div class="col-md-12">
-                                <button name="check_address" value="check_address" class="btn btn-success" v-on:click.prevent="addressConfirm">Click To Confirm Address</button>
+                        <div class="row">
+                            <div class="col-md-12" v-if="!addressIsConfirmed">
                                 <p>
-                                    <em>If the map generated is wrong, adjust the address above and confirm again</em>
+                                    For the purpose of shipping/logistics (when you have to send orders to your customers), we need to properly <strong>geolocate<strong> your address above.<br/><br/>
+                                    <em>Click the Confirm Address button to do this</em>
                                 </p>
+                                <button name="check_address" value="check_address" class="btn btn-success" v-on:click.prevent="addressConfirm">Click To Confirm Address</button>
+                            </div>
+                            <div class="col-md-12" v-if="addressIsConfirmed">
+                                If you would like to change the GeoLocation of your address (for shipping/logistics purposes),
+                                <a href="#" v-on:click.prevent="addressReConfirm">RE-CONFIRM ADDRESS</a>
+                            </div>
+
+                            <div class="modal fade" id="confirm-address-modal" tabindex="-1" role="dialog" aria-labelledby="confirm-address-modalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title" id="confirm-address-modalLabel">Address GeoLocation</h4>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            
+                                            <h5>Confirm your Address <em>on the map</em></h5>
+
+                                            <div class="col_full">
+                                                <input type="text" class="sm-form-control" name="address_address" id="address_address" required placeholder="Enter Delivery Address">
+                                            </div>
+
+                                            <div class="row" id="address_map"></div>
+
+                                            <div class="row">
+                                                <div class="col-md-12 form-group">
+                                                    <a id="address_confirm" href="#" v-on:click.prevent="addressIsCorrect" class="btn btn-success btn-block">Address Is Correct</a>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <!-- <button type="submit" v-if="addressIsConfirmed" form="form-confirm-address" class="btn btn-primary" name="action" value="confirm_address">Confirm & Save Address</button> -->
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="row" id="address_map">
@@ -184,6 +220,9 @@
         },
         mounted: function() {
             this.loadGoogleMaps();
+            if (this.company_data.location.latitude > 0 && this.company_data.location.longitude > 0) {
+                this.addressIsConfirmed = true
+            }
         },
         computed: {
             getLatitude: function() {
@@ -207,28 +246,26 @@
                 const script = document.createElement('script');
                 if (this.useAutoComplete) {
                     script.src = `https://maps.googleapis.com/maps/api/js?key=${this.env.CREDENTIAL_GOOGLE_API_KEY}&libraries=places`;
-                    script.onload = function() {
-                        vmSettingsPage.initMap();
-                    };
                 } else {
                     script.src = `https://maps.googleapis.com/maps/api/js?key=` + this.env.CREDENTIAL_GOOGLE_API_KEY + `&callback=Function.prototype`;
                 }
                 script.defer = true;
                 document.head.appendChild(script);
-                console.log(this.env.CREDENTIAL_GOOGLE_API_KEY)
             },
             initMap: function () {
                 // Initialize and display the map
                 const address = `${this.location.address1}, ${this.location.address2}, ${this.location.city}`;
-                const state = this.states.find( st => st.id === this.location.state.data.id );
+                let stateObject = this.states.find( st => st.id === this.location.state.data.id );
+                const state = stateObject.name;
+                console.log(stateObject)
+                console.log(this.countries)
+                console.log(this.env.SETTINGS_COUNTRY);
                 const country = this.countries.find( co => co.id === this.env.SETTINGS_COUNTRY );
 
                 let retry = false;
                 //let retry = vmSettingsPage.company_data.location.latitude > 0 && vmSettingsPage.company_data.location.longitude > 0;
 
                 if (retry) {
-
-                    console.log('1')
 
                     const latitude = vmSettingsPage.company_data.location.latitude;
                     const longitude = vmSettingsPage.company_data.location.longitude;
@@ -248,8 +285,6 @@
 
                 } else {
 
-                    console.log('2')
-
                     const geocoder = new google.maps.Geocoder();
                     const mapOptions = {
                         zoom: 15,
@@ -265,7 +300,8 @@
                             map.setCenter(results[0].geometry.location);
                             new google.maps.Marker({
                                 map: map,
-                                position: results[0].geometry.location
+                                position: results[0].geometry.location,
+                                title: vmSettingsPage.company.name
                             });
                         } else {
                             console.log('Geocode was not successful for the following reason: ' + status);
@@ -274,10 +310,78 @@
 
                 }
             },
+            initAutocomplete: function () {
+
+                const mapOptions = {
+                    center: { lat: 0, lng: 0 },
+                    zoom: 8
+                };
+                const map = new google.maps.Map(document.getElementById('address_map'), mapOptions);
+                const geocoder = new google.maps.Geocoder();
+
+                // Initialize the autocomplete
+                const input = document.getElementById('address_address');
+                const autocomplete = new google.maps.places.Autocomplete(input);
+
+                autocomplete.bindTo('bounds', map);
+
+                // Retrieve the selected place and populate latitude and longitude fields
+                autocomplete.addListener('place_changed', function() {
+                    const place = autocomplete.getPlace();
+                    if (!place.geometry) {
+                        console.log('No location data available for this place.');
+                        this.addressIsConfirmed = false;
+                        return;
+                    }
+
+                    this.addressIsConfirmed = true;
+
+                    // Update the map center and marker
+                    map.setCenter(place.geometry.location);
+                    const marker = new google.maps.Marker({
+                        map: map,
+                        position: place.geometry.location
+                    });
+
+                    // Extract the state and country
+                    let state = '';
+                    let country = '';
+                    let countryCode = '';
+                    for (const component of place.address_components) {
+                        const componentType = component.types[0];
+                        if (componentType === 'administrative_area_level_1') {
+                            state = component.long_name;
+                        } else if (componentType === 'country') {
+                            country = component.long_name;
+                            countryCode = component.short_name; // Two-digit ISO country code
+                        }
+                    }
+
+                    // Log the state and country to the console
+                    console.log(state);
+                    console.log(country + ' ' + countryCode);
+
+                    this.locationLatitude = place.geometry.location.lat();
+                    this.locationLongitude = place.geometry.location.lng();
+                    
+                });
+            },
             addressConfirm: function () {
-                this.initMap();
+                this.initAutocomplete();
+                $('#confirm-address-modal').modal('show');
+            },
+            addressReConfirm: function () {
+                this.addressIsConfirmed = false;
+            },
+            addressIsCorrect: function () {
                 this.addressIsConfirmed = true;
-            }
+                this.company_data.location.latitude = this.locationLatitude;
+                this.company_data.location.longitude = this.locationLongitude;
+                $('#confirm-address-modal').modal('hide');
+            },
+            addressCancel: function () {
+                $('#confirm-address-modal').modal('hide');
+            },
         }
     })
 </script>
