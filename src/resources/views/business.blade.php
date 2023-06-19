@@ -228,6 +228,8 @@
 
                 if (retry) {
 
+                    console.log('1')
+
                     const latitude = vmSettingsPage.company_data.location.latitude;
                     const longitude = vmSettingsPage.company_data.location.longitude;
 
@@ -245,6 +247,8 @@
                     });
 
                 } else {
+
+                    console.log('2')
 
                     const geocoder = new google.maps.Geocoder();
                     const mapOptions = {
