@@ -109,10 +109,10 @@
                         <div class="row">
                             <div class="col-md-12" v-if="!addressIsConfirmed">
                                 <p>
-                                    For the purpose of shipping/logistics (when you have to send orders to your customers), we need to properly <strong>geolocate<strong> your address above.<br/><br/>
-                                    <em>Click the Confirm Address button to do this</em>
+                                    For the purpose of shipping/logistics (when you have to send orders to your customers), we need to properly <strong>geolocate</strong> your address above.
+                                    <em>Click the <strong>Geo-Locate</strong> Address button to do this</em>
                                 </p>
-                                <button name="check_address" value="check_address" class="btn btn-success" v-on:click.prevent="addressConfirm">Click To Confirm Address</button>
+                                <button name="check_address" value="check_address" class="btn btn-success" v-on:click.prevent="addressConfirm">Geo-Locate Address</button>
                             </div>
                             <div class="col-md-12" v-if="addressIsConfirmed">
                                 If you would like to change the GeoLocation of your address (for shipping/logistics purposes),
@@ -134,7 +134,9 @@
                                                 <input type="text" class="sm-form-control" name="address_address" id="address_address" required placeholder="Enter Delivery Address">
                                             </div>
 
-                                            <div class="row" id="address_map"></div>
+                                            <div class="row" id="address_map">
+                                                Loading Map...
+                                            </div>
 
                                             <div class="row">
                                                 <div class="col-md-12 form-group">
@@ -149,9 +151,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row" id="address_map">
-                            Loading Map...
                         </div>
                     </div>
                     <div class="card-footer text-right">
@@ -214,31 +213,17 @@
             env: {!! json_encode($env) !!},
             loggedInUser: headerAuthVue.loggedInUser,
             addressIsConfirmed: false,
-            useAutoComplete: false,
+            useAutoComplete: true,
             locationLatitude: 0,
             locationLongitude: 0
         },
         mounted: function() {
-            this.loadGoogleMaps();
             if (this.company_data.location.latitude > 0 && this.company_data.location.longitude > 0) {
                 this.addressIsConfirmed = true
             }
         },
         computed: {
-            getLatitude: function() {
-                if (typeof this.company_data.location !== 'undefined' && this.company_data.location.latitude !== 'undefined') {
-                    return this.company_data.location.latitude;
-                } else {
-                    return 0;
-                }
-            },
-            getLongitude: function() {
-                if (typeof this.company_data.location !== 'undefined' && this.company_data.location.longitude !== 'undefined') {
-                    return this.company_data.location.longitude;
-                } else {
-                    return 0;
-                }
-            },
+            
         },
         methods: {
             loadGoogleMaps: function () {
@@ -249,6 +234,9 @@
                 } else {
                     script.src = `https://maps.googleapis.com/maps/api/js?key=` + this.env.CREDENTIAL_GOOGLE_API_KEY + `&callback=Function.prototype`;
                 }
+                script.onload = function() {
+                    initAutocomplete();
+                };
                 script.defer = true;
                 document.head.appendChild(script);
             },
@@ -327,14 +315,13 @@
 
                 // Retrieve the selected place and populate latitude and longitude fields
                 autocomplete.addListener('place_changed', function() {
+
                     const place = autocomplete.getPlace();
                     if (!place.geometry) {
                         console.log('No location data available for this place.');
                         this.addressIsConfirmed = false;
                         return;
                     }
-
-                    this.addressIsConfirmed = true;
 
                     // Update the map center and marker
                     map.setCenter(place.geometry.location);
@@ -367,7 +354,8 @@
                 });
             },
             addressConfirm: function () {
-                this.initAutocomplete();
+                this.loadGoogleMaps();
+                //this.initAutocomplete();
                 $('#confirm-address-modal').modal('show');
             },
             addressReConfirm: function () {
