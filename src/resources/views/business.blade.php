@@ -1,7 +1,27 @@
 @extends('layouts.tabler')
+
+@section('head_css')
+<style type="text/css">
+    .pac-container {
+        background-color: #FFF;
+        z-index: 20;
+        position: fixed;
+        display: inline-block;
+        float: left;
+    }
+    .modal{
+        z-index: 20;   
+    }
+    .modal-backdrop{
+        z-index: 10;        
+    }
+</style>
+@endsection
+
 @section('body_content_header_extras')
 
 @endsection
+
 @section('body_content_main')
 @include('layouts.blocks.tabler.alert')
 <div class="row" id="business-profile">
@@ -116,7 +136,7 @@
                             </div>
                             <div class="col-md-12" v-if="addressIsConfirmed">
                                 If you would like to change the GeoLocation of your address (for shipping/logistics purposes),
-                                <a href="#" v-on:click.prevent="addressReConfirm">RE-CONFIRM ADDRESS</a>
+                                <a href="#" v-on:click.prevent="addressReConfirm">RE-LOCATE ADDRESS</a>
                             </div>
 
                             <div class="modal fade" id="confirm-address-modal" tabindex="-1" role="dialog" aria-labelledby="confirm-address-modalLabel" aria-hidden="true">
@@ -130,17 +150,22 @@
                                             
                                             <h5>Confirm your Address <em>on the map</em></h5>
 
-                                            <div class="col_full">
-                                                <input type="text" class="sm-form-control" name="address_address" id="address_address" required placeholder="Enter Delivery Address">
+                                            <div class="row">
+                                                <div class="col-md-12 form-group">
+                                                    <input type="text" class="form-control" name="address_address" id="address_address" required placeholder="Enter Delivery Address">
+                                            
+                                                </div>
                                             </div>
 
-                                            <div class="row" id="address_map">
-                                                Loading Map...
+                                            <div class="row col-md-12" id="address_map">
+                                                <div id="address_map" style="width:100%; height: 300px;">
+                                                    Loading Map...
+                                                </div>
                                             </div>
 
                                             <div class="row">
                                                 <div class="col-md-12 form-group">
-                                                    <a id="address_confirm" href="#" v-on:click.prevent="addressIsCorrect" class="btn btn-success btn-block">Address Is Correct</a>
+                                                    <a id="address_confirm" href="#" v-on:click.prevent="addressIsCorrect" class="btn btn-success btn-block">Confirm Location</a>
                                                 </div>
                                             </div>
 
@@ -156,7 +181,7 @@
                     <div class="card-footer text-right">
                         <input type="hidden" name="latitude" id="latitude" v-model="company_data.location.latitude">
                         <input type="hidden" name="longitude" id="longitude" v-model="company_data.location.longitude">
-                        <button :disabled="!addressIsConfirmed" type="submit" name="action" value="update_location" class="btn btn-primary">Update Address</button>
+                        <button :disabled="!addressIsConfirmed" type="submit" name="action" value="update_location" class="btn btn-primary">Save Address</button>
                     </div>
 
                 </form>
@@ -220,6 +245,8 @@
         mounted: function() {
             if (this.company_data.location.latitude > 0 && this.company_data.location.longitude > 0) {
                 this.addressIsConfirmed = true
+            } else {
+                console.log(this.company_data.location)
             }
         },
         computed: {
@@ -230,79 +257,79 @@
                 // Load the Google Maps API script
                 const script = document.createElement('script');
                 if (this.useAutoComplete) {
-                    script.src = `https://maps.googleapis.com/maps/api/js?key=${this.env.CREDENTIAL_GOOGLE_API_KEY}&libraries=places`;
+                    script.src = `https://maps.googleapis.com/maps/api/js?key=${this.env.CREDENTIAL_GOOGLE_API_KEY}&libraries=places&callback=Function.prototype`;
                 } else {
-                    script.src = `https://maps.googleapis.com/maps/api/js?key=` + this.env.CREDENTIAL_GOOGLE_API_KEY + `&callback=Function.prototype`;
+                    script.src = `https://maps.googleapis.com/maps/api/js?key=${this.env.CREDENTIAL_GOOGLE_API_KEY}&callback=Function.prototype`;
                 }
                 script.onload = function() {
-                    initAutocomplete();
+                    vmSettingsPage.initAutocomplete();
                 };
                 script.defer = true;
                 document.head.appendChild(script);
             },
-            initMap: function () {
-                // Initialize and display the map
-                const address = `${this.location.address1}, ${this.location.address2}, ${this.location.city}`;
-                let stateObject = this.states.find( st => st.id === this.location.state.data.id );
-                const state = stateObject.name;
-                console.log(stateObject)
-                console.log(this.countries)
-                console.log(this.env.SETTINGS_COUNTRY);
-                const country = this.countries.find( co => co.id === this.env.SETTINGS_COUNTRY );
+            // initMap: function () {
+            //     // Initialize and display the map
+            //     const address = `${this.location.address1}, ${this.location.address2}, ${this.location.city}`;
+            //     let stateObject = this.states.find( st => st.id === this.location.state.data.id );
+            //     const state = stateObject.name;
+            //     console.log(stateObject)
+            //     console.log(this.countries)
+            //     console.log(this.env.SETTINGS_COUNTRY);
+            //     const country = this.countries.find( co => co.id === this.env.SETTINGS_COUNTRY );
 
-                let retry = false;
-                //let retry = vmSettingsPage.company_data.location.latitude > 0 && vmSettingsPage.company_data.location.longitude > 0;
+            //     let retry = false;
+            //     //let retry = vmSettingsPage.company_data.location.latitude > 0 && vmSettingsPage.company_data.location.longitude > 0;
 
-                if (retry) {
+            //     if (retry) {
 
-                    const latitude = vmSettingsPage.company_data.location.latitude;
-                    const longitude = vmSettingsPage.company_data.location.longitude;
+            //         const latitude = vmSettingsPage.company_data.location.latitude;
+            //         const longitude = vmSettingsPage.company_data.location.longitude;
 
-                    const mapOptions = {
-                        center: { lat: latitude, lng: longitude },
-                        zoom: 8
-                    };
-                    const map = new google.maps.Map(document.getElementById('address_map'), mapOptions);
+            //         const mapOptions = {
+            //             center: { lat: latitude, lng: longitude },
+            //             zoom: 8
+            //         };
+            //         const map = new google.maps.Map(document.getElementById('address_map'), mapOptions);
 
-                    // Optionally, you can add a marker at the specified coordinates
-                    const marker = new google.maps.Marker({
-                        position: { lat: latitude, lng: longitude },
-                        map: map,
-                        title: vmSettingsPage.company.name
-                    });
+            //         // Optionally, you can add a marker at the specified coordinates
+            //         const marker = new google.maps.Marker({
+            //             position: { lat: latitude, lng: longitude },
+            //             map: map,
+            //             title: vmSettingsPage.company.name
+            //         });
 
-                } else {
+            //     } else {
 
-                    const geocoder = new google.maps.Geocoder();
-                    const mapOptions = {
-                        zoom: 15,
-                        center: new google.maps.LatLng(0, 0) // Default center
-                    };
-                    const map = new google.maps.Map(document.getElementById('address_map'), mapOptions);
+            //         const geocoder = new google.maps.Geocoder();
+            //         const mapOptions = {
+            //             zoom: 15,
+            //             center: new google.maps.LatLng(0, 0) // Default center
+            //         };
+            //         const map = new google.maps.Map(document.getElementById('address_map'), mapOptions);
 
-                    const addressString = `${address}, ${state}, ${country}`;
-                    console.log(addressString)
-                    geocoder.geocode({ address: addressString }, function(results, status) {
-                        console.log(status, results);
-                        if (status === google.maps.GeocoderStatus.OK) {
-                            map.setCenter(results[0].geometry.location);
-                            new google.maps.Marker({
-                                map: map,
-                                position: results[0].geometry.location,
-                                title: vmSettingsPage.company.name
-                            });
-                        } else {
-                            console.log('Geocode was not successful for the following reason: ' + status);
-                        }
-                    });
+            //         const addressString = `${address}, ${state}, ${country}`;
+            //         console.log(addressString)
+            //         geocoder.geocode({ address: addressString }, function(results, status) {
+            //             console.log(status, results);
+            //             if (status === google.maps.GeocoderStatus.OK) {
+            //                 map.setCenter(results[0].geometry.location);
+            //                 new google.maps.Marker({
+            //                     map: map,
+            //                     position: results[0].geometry.location,
+            //                     title: vmSettingsPage.company.name
+            //                 });
+            //             } else {
+            //                 console.log('Geocode was not successful for the following reason: ' + status);
+            //             }
+            //         });
 
-                }
-            },
+            //     }
+            // },
             initAutocomplete: function () {
 
                 const mapOptions = {
                     center: { lat: 0, lng: 0 },
-                    zoom: 8
+                    zoom: 18
                 };
                 const map = new google.maps.Map(document.getElementById('address_map'), mapOptions);
                 const geocoder = new google.maps.Geocoder();
@@ -319,7 +346,7 @@
                     const place = autocomplete.getPlace();
                     if (!place.geometry) {
                         console.log('No location data available for this place.');
-                        this.addressIsConfirmed = false;
+                        vmSettingsPage.addressIsConfirmed = false;
                         return;
                     }
 
@@ -345,21 +372,22 @@
                     }
 
                     // Log the state and country to the console
-                    console.log(state);
-                    console.log(country + ' ' + countryCode);
+                    // console.log(state);
+                    // console.log(country + ' ' + countryCode);
 
-                    this.locationLatitude = place.geometry.location.lat();
-                    this.locationLongitude = place.geometry.location.lng();
+                    vmSettingsPage.locationLatitude = place.geometry.location.lat();
+                    vmSettingsPage.locationLongitude = place.geometry.location.lng();
                     
                 });
             },
             addressConfirm: function () {
                 this.loadGoogleMaps();
-                //this.initAutocomplete();
                 $('#confirm-address-modal').modal('show');
             },
             addressReConfirm: function () {
                 this.addressIsConfirmed = false;
+                // this.loadGoogleMaps();
+                // $('#confirm-address-modal').modal('show');
             },
             addressIsCorrect: function () {
                 this.addressIsConfirmed = true;
