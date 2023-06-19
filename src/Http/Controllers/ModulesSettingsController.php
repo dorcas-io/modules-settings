@@ -48,7 +48,7 @@ class ModulesSettingsController extends Controller {
         # the location information
         $locations = $this->getLocations($sdk);
         $location = !empty($locations) ? $locations->first() : $location;
-        $this->data['states'] = $sts = Controller::getDorcasStates($sdk);
+        $this->data['states'] = $sts = Controller::getDorcasStates($sdk, env('SETTINGS_COUNTRY', 'NG'));
         # get the states
         $this->data['countries'] = $this->getCountries($sdk);
         $this->data['location'] = $location;
