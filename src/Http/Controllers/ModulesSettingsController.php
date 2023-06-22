@@ -3,6 +3,7 @@
 namespace Dorcas\ModulesSettings\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Dorcas\ModulesSettings\Models\ModulesSettings;
 use App\Dorcas\Hub\Utilities\UiResponse\UiResponse;
@@ -232,9 +233,11 @@ class ModulesSettingsController extends Controller {
             if ($request->action === 'customise_logo') {
                 # update the business information
                 $file = $request->file('logo');
+
                 $query = $sdk->createCompanyService()
                                 ->addMultipartParam('logo', file_get_contents($file->getRealPath()), $file->getClientOriginalName())
                                 ->send('post');
+
                 # send the request
                 if (!$query->isSuccessful()) {
                     //throw new \RuntimeException($query->getErrors()[0]['title']);
@@ -386,16 +389,21 @@ class ModulesSettingsController extends Controller {
      */
     public function banking_post(Request $request, Sdk $sdk)
     {
+
         $this->validate($request, [
-            'bank' => 'required|numeric|max:100',
+            'bank' => 'required|numeric',
             'account_number' => 'required|string|max:30',
             'account_name' => 'required|string|max:80'
         ]);
+        //            |max:100',
         # validate the request
+
         try {
+
             $bankName = Banks::BANK_CODES[$request->bank];
             # we get the name of the specific bank for submission
             $query = $sdk->createProfileService();
+
             # get the query object
             $payload = $request->only(['account_number', 'account_name']);
             foreach ($payload as $key => $value) {
