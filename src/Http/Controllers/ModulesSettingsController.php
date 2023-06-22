@@ -49,9 +49,23 @@ class ModulesSettingsController extends Controller {
         # the location information
         $locations = $this->getLocations($sdk);
         $location = !empty($locations) ? $locations->first() : $location;
-        $this->data['states'] = $sts = Controller::getDorcasStates($sdk);
+        $this->data['states'] = $sts = Controller::getDorcasStates($sdk, env('SETTINGS_COUNTRY', 'NG'));
         # get the states
+        $this->data['countries'] = $this->getCountries($sdk);
         $this->data['location'] = $location;
+        $this->data['env'] = [
+            "SETTINGS_COUNTRY" => env('SETTINGS_COUNTRY', 'NG'),
+            "CREDENTIAL_GOOGLE_API_KEY" => env('CREDENTIAL_GOOGLE_API_KEY', 'ABC'),
+        ];
+
+        $company_data = (array) $company->extra_data;
+
+        $this->data['company_data'] = $company_data;
+
+        if ( empty($company_data['location']) ) {
+            $this->data['company_data']['location'] = ['latitude' => 0, 'longitude' => 0];
+        }
+        
         return view('modules-settings::business', $this->data);
     }
 
@@ -72,6 +86,7 @@ class ModulesSettingsController extends Controller {
         try {
             $company = $request->user()->company(true, true);
             # get the company information
+
             if ($request->action === 'update_business') {
                 # update the business information
                 $query = $sdk->createCompanyService()
@@ -108,6 +123,25 @@ class ModulesSettingsController extends Controller {
                 }
                 Cache::forget('business.locations.'.$company->id);
                 # forget the cache data
+
+                // Update Geo Location in company meta data
+                $company = $request->user()->company(true, true);
+                
+                $configuration = !empty($company->extra_data) ? $company->extra_data : [];
+
+                if (empty($configuration['location'])) {
+                    $configuration['location'] = [];
+                }
+                $configuration['location']['latitude'] = $request->input('latitude');
+                $configuration['location']['longitude'] = $request->input('longitude');
+                $queryL = $sdk->createCompanyService()->addBodyParam('extra_data', $configuration)
+                                                    ->send('post');
+                # send the request
+                if (!$queryL->isSuccessful()) {
+                    throw new \RuntimeException('Failed while updating your geo-location data. Please try again.');
+                }
+
+
                 $message = ['Successfully updated your company address information.'];
             }
             $response = (tabler_ui_html_response($message))->setType(UiResponse::TYPE_SUCCESS);
