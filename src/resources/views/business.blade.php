@@ -246,7 +246,7 @@
             if (this.company_data.location.latitude > 0 && this.company_data.location.longitude > 0) {
                 this.addressIsConfirmed = true
             } else {
-                console.log(this.company_data.location)
+                //console.log(this.company_data.location)
             }
         },
         computed: {

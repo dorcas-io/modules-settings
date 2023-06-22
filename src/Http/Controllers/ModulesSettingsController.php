@@ -399,7 +399,7 @@ class ModulesSettingsController extends Controller {
         } else {
             $this->data['default'] = [
                 'account_number' => '',
-                'account_name' => $request->user()->firstname . ' ' . $request->user()->lastname,
+                'account_name' => $request->user()->company()->name,
                 'json_data' => [
                     'bank_code' => ''
                 ]
