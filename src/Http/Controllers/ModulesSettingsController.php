@@ -397,9 +397,12 @@ class ModulesSettingsController extends Controller {
         if (!empty($accounts) && $accounts->count() > 0) {
             $this->data['account'] = $account = $accounts->first();
         } else {
+            //$account_name = $request->user()->firstname . ' ' . $request->user()->lastname;
+            $co = $request->user()->company();
+            $account_name = $co["name"];
             $this->data['default'] = [
                 'account_number' => '',
-                'account_name' => $request->user()->company()->name,
+                'account_name' => $account_name,
                 'json_data' => [
                     'bank_code' => ''
                 ]
