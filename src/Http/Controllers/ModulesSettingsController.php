@@ -149,7 +149,10 @@ class ModulesSettingsController extends Controller {
         }
 
         /* START INTERCEPT GETTING STARTED REDIRECTS */
-        \Dorcas\ModulesDashboard\Http\Controllers\ModulesDashboardController::processGettingStartedRedirection($request, 'setup_pickup_address', $response);
+        $redirect = \Dorcas\ModulesDashboard\Http\Controllers\ModulesDashboardController::processGettingStartedRedirection($request, 'setup_pickup_address', $response);
+        if ($redirect) {
+            return redirect(route('dashboard'))->with('UiResponse', $response);
+        }
         /* END INTERCEPT GETTING STARTED REDIRECTS */
 
 
