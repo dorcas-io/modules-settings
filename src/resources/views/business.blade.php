@@ -157,7 +157,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="row col-md-12" id="address_map">
+                                            <div class="row col-md-12">
                                                 <div id="address_map" style="width:100%; height: 300px;">
                                                     Loading Map...
                                                 </div>

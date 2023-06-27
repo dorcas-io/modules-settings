@@ -147,6 +147,12 @@ class ModulesSettingsController extends Controller {
         } catch (\Exception $e) {
             $response = (tabler_ui_html_response([$e->getMessage()]))->setType(UiResponse::TYPE_ERROR);
         }
+
+        /* START INTERCEPT GETTING STARTED REDIRECTS */
+        \Dorcas\ModulesDashboard\Http\Controllers\ModulesDashboardController::processGettingStartedRedirection($request, 'setup_pickup_address', $response);
+        /* END INTERCEPT GETTING STARTED REDIRECTS */
+
+
         return redirect(url()->current())->with('UiResponse', $response);
     }
 
