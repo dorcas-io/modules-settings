@@ -148,13 +148,10 @@ class ModulesSettingsController extends Controller {
             $response = (tabler_ui_html_response([$e->getMessage()]))->setType(UiResponse::TYPE_ERROR);
         }
 
-        /* START INTERCEPT GETTING STARTED REDIRECTS */
-        $redirect = \Dorcas\ModulesDashboard\Http\Controllers\ModulesDashboardController::processGettingStartedRedirection($request, 'setup_pickup_address', $response);
-        if ($redirect) {
+        $gettingStartedRedirect = \Dorcas\ModulesDashboard\Http\Controllers\ModulesDashboardController::processGettingStartedRedirection($request, 'setup_pickup_address', $response);
+        if ($gettingStartedRedirect) {
             return redirect(route('dashboard'))->with('UiResponse', $response);
         }
-        /* END INTERCEPT GETTING STARTED REDIRECTS */
-
 
         return redirect(url()->current())->with('UiResponse', $response);
     }
@@ -465,6 +462,13 @@ class ModulesSettingsController extends Controller {
         } catch (\Exception $e) {
             $response = (tabler_ui_html_response([$e->getMessage()]))->setType(UiResponse::TYPE_ERROR);
         }
+
+        $gettingStartedRedirect = \Dorcas\ModulesDashboard\Http\Controllers\ModulesDashboardController::processGettingStartedRedirection($request, 'setup_bank_account', $response);
+        if ($gettingStartedRedirect) {
+            return redirect(route('dashboard'))->with('UiResponse', $response);
+        }
+
+
         return redirect(url()->current())->with('UiResponse', $response);
     }
     
