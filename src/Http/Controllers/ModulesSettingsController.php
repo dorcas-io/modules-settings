@@ -122,7 +122,7 @@ class ModulesSettingsController extends Controller {
                 }
                 Cache::forget('business.locations.'.$company->id);
                 # forget the cache data
-                
+
                 $updated_locations = $this->getLocations($sdk); // recache immediately
 
                 // Update Geo Location in company meta data
@@ -133,6 +133,7 @@ class ModulesSettingsController extends Controller {
                 if (empty($configuration['location'])) {
                     $configuration['location'] = [];
                 }
+                $configuration['location']['address'] = $request->input('address1') . " " . $request->input('address2');
                 $configuration['location']['latitude'] = $request->input('latitude');
                 $configuration['location']['longitude'] = $request->input('longitude');
                 $queryL = $sdk->createCompanyService()->addBodyParam('extra_data', $configuration)
