@@ -122,6 +122,8 @@ class ModulesSettingsController extends Controller {
                 }
                 Cache::forget('business.locations.'.$company->id);
                 # forget the cache data
+                
+                $updated_locations = $this->getLocations($sdk); // recache immediately
 
                 // Update Geo Location in company meta data
                 $company = $request->user()->company(true, true);
