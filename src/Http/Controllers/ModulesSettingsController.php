@@ -125,6 +125,8 @@ class ModulesSettingsController extends Controller {
                 Cache::forget('business.locations.'.$company->id);
                 # forget the cache data
 
+                $updated_locations = $this->getLocations($sdk); // recache immediately
+
                 // Update Geo Location in company meta data
                 $company = $request->user()->company(true, true);
                 
@@ -133,6 +135,7 @@ class ModulesSettingsController extends Controller {
                 if (empty($configuration['location'])) {
                     $configuration['location'] = [];
                 }
+                $configuration['location']['address'] = $request->input('address1') . " " . $request->input('address2');
                 $configuration['location']['latitude'] = $request->input('latitude');
                 $configuration['location']['longitude'] = $request->input('longitude');
                 $configuration['location']['address'] = $request->input('address1');
@@ -151,6 +154,12 @@ class ModulesSettingsController extends Controller {
         } catch (\Exception $e) {
             $response = (tabler_ui_html_response([$e->getMessage()]))->setType(UiResponse::TYPE_ERROR);
         }
+
+        $gettingStartedRedirect = \Dorcas\ModulesDashboard\Http\Controllers\ModulesDashboardController::processGettingStartedRedirection($request, 'setup_pickup_address', $response);
+        if ($gettingStartedRedirect) {
+            return redirect(route('dashboard'))->with('UiResponse', $response);
+        }
+
         return redirect(url()->current())->with('UiResponse', $response);
     }
 
@@ -403,9 +412,12 @@ class ModulesSettingsController extends Controller {
         if (!empty($accounts) && $accounts->count() > 0) {
             $this->data['account'] = $account = $accounts->first();
         } else {
+            //$account_name = $request->user()->firstname . ' ' . $request->user()->lastname;
+            $co = $request->user()->company();
+            $account_name = $co["name"];
             $this->data['default'] = [
                 'account_number' => '',
-                'account_name' => $request->user()->firstname . ' ' . $request->user()->lastname,
+                'account_name' => $account_name,
                 'json_data' => [
                     'bank_code' => ''
                 ]
@@ -464,6 +476,13 @@ class ModulesSettingsController extends Controller {
         } catch (\Exception $e) {
             $response = (tabler_ui_html_response([$e->getMessage()]))->setType(UiResponse::TYPE_ERROR);
         }
+
+        $gettingStartedRedirect = \Dorcas\ModulesDashboard\Http\Controllers\ModulesDashboardController::processGettingStartedRedirection($request, 'setup_bank_account', $response);
+        if ($gettingStartedRedirect) {
+            return redirect(route('dashboard'))->with('UiResponse', $response);
+        }
+
+
         return redirect(url()->current())->with('UiResponse', $response);
     }
     

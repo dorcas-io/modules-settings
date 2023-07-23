@@ -139,43 +139,6 @@
                                 <a href="#" v-on:click.prevent="addressReConfirm">RE-LOCATE ADDRESS</a>
                             </div>
 
-                            <div class="modal fade" id="confirm-address-modal" tabindex="-1" role="dialog" aria-labelledby="confirm-address-modalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h4 class="modal-title" id="confirm-address-modalLabel">Address GeoLocation</h4>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            
-                                            <h5>Confirm your Address <em>on the map</em></h5>
-
-                                            <div class="row">
-                                                <div class="col-md-12 form-group">
-                                                    <input type="text" class="form-control" name="address_address" id="address_address" required placeholder="Enter Delivery Address">
-                                            
-                                                </div>
-                                            </div>
-
-                                            <div class="row col-md-12" id="address_map">
-                                                <div id="address_map" style="width:100%; height: 300px;">
-                                                    Loading Map...
-                                                </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-md-12 form-group">
-                                                    <a id="address_confirm" href="#" v-on:click.prevent="addressIsCorrect" class="btn btn-success btn-block">Confirm Location</a>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                        <div class="modal-footer">
-                                            <!-- <button type="submit" v-if="addressIsConfirmed" form="form-confirm-address" class="btn btn-primary" name="action" value="confirm_address">Confirm & Save Address</button> -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <div class="card-footer text-right">
@@ -188,7 +151,43 @@
 
             </div>
 
+            <div class="modal fade" id="confirm-address-modal" tabindex="-1" role="dialog" aria-labelledby="confirm-address-modalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="confirm-address-modalLabel">Address GeoLocation</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            
+                            <h5>Confirm your Address <em>on the map</em></h5>
 
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <input type="text" class="form-control" name="address_address" id="address_address" required placeholder="Enter Delivery Address">
+                            
+                                </div>
+                            </div>
+
+                            <div class="row col-md-12">
+                                <div id="address_map" style="width:100%; height: 300px;">
+                                    Loading Map...
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <a id="address_confirm" href="#" v-on:click.prevent="addressIsCorrect" class="btn btn-success btn-block">Confirm Location</a>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <!-- <button type="submit" v-if="addressIsConfirmed" form="form-confirm-address" class="btn btn-primary" name="action" value="confirm_address">Confirm & Save Address</button> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="col-md-6">
 
@@ -246,7 +245,7 @@
             if (this.company_data.location.latitude > 0 && this.company_data.location.longitude > 0) {
                 this.addressIsConfirmed = true
             } else {
-                console.log(this.company_data.location)
+                //console.log(this.company_data.location)
             }
         },
         computed: {
