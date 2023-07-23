@@ -48,6 +48,7 @@ class ModulesSettingsController extends Controller {
         $location = ['address1' => '', 'address2' => '', 'state' => ['data' => ['id' => '']]];
         # the location information
         $locations = $this->getLocations($sdk);
+
         $location = !empty($locations) ? $locations->first() : $location;
         $this->data['states'] = $sts = Controller::getDorcasStates($sdk, env('SETTINGS_COUNTRY', 'NG'));
         # get the states
@@ -63,9 +64,9 @@ class ModulesSettingsController extends Controller {
         $this->data['company_data'] = $company_data;
 
         if ( empty($company_data['location']) ) {
-            $this->data['company_data']['location'] = ['latitude' => 0, 'longitude' => 0];
+            $this->data['company_data']['location'] = ['latitude' => 0, 'longitude' => 0 , 'address' => ''];
         }
-        
+
         return view('modules-settings::business', $this->data);
     }
 
@@ -134,6 +135,8 @@ class ModulesSettingsController extends Controller {
                 }
                 $configuration['location']['latitude'] = $request->input('latitude');
                 $configuration['location']['longitude'] = $request->input('longitude');
+                $configuration['location']['address'] = $request->input('address1');
+
                 $queryL = $sdk->createCompanyService()->addBodyParam('extra_data', $configuration)
                                                     ->send('post');
                 # send the request
