@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use App\Dorcas\Hub\Enum\Banks;
 use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
+use Dorcas\ModulesAssistant\Http\Controllers\ModulesAssistantController;
 
 
 class ModulesSettingsController extends Controller {
@@ -184,7 +186,7 @@ class ModulesSettingsController extends Controller {
             'lastname' => 'required|string|max:30',
             'phone' => 'required|string|max:30',
             'email' => 'required|email|max:80',
-            'gender' => 'nullable|string|in:female,male'
+            'gender' => 'required|string|in:female,male'
         ]);
         # validate the request
         try {
@@ -292,6 +294,8 @@ class ModulesSettingsController extends Controller {
         }
         return redirect(url()->current())->with('UiResponse', $response);
     }
+
+
 
     public function billing_index(Request $request, Sdk $sdk)
     {

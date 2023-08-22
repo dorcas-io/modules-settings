@@ -23,8 +23,8 @@
                       <div class="form-group">
                         <label class="form-label" for="bank" @if ($errors->has('bank')) data-error="{{ $errors->first('bank') }}" @endif>Bank</label>
                         <select class="form-control" name="bank" id="bank" v-model="account.json_data.bank_code" required>
-                                        <option v-for="bank in banks" :key="bank.code" v-bind:value="bank.code">@{{ bank.name }}</option>
-                                    </select>
+                          <option v-for="bank in banks" :key="bank.code" v-bind:value="bank.code">@{{ bank.name }}</option>
+                        </select>
                       </div>
                     </div>
 
