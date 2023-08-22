@@ -20,6 +20,7 @@
               	{{ csrf_field() }}
                 <div class="card-body">
                   <h5>Branding</h5>
+
 	                @if (!empty($company->logo))
 	                    <img src="{{ $company->logo }}" alt="img12" class="responsive-img mb-4">
 	                @endif

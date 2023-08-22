@@ -3,6 +3,7 @@
 namespace Dorcas\ModulesSettings\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Dorcas\ModulesSettings\Models\ModulesSettings;
 use App\Dorcas\Hub\Utilities\UiResponse\UiResponse;
@@ -49,6 +50,7 @@ class ModulesSettingsController extends Controller {
         $location = ['address1' => '', 'address2' => '', 'state' => ['data' => ['id' => '']]];
         # the location information
         $locations = $this->getLocations($sdk);
+
         $location = !empty($locations) ? $locations->first() : $location;
         $this->data['states'] = $sts = Controller::getDorcasStates($sdk, env('SETTINGS_COUNTRY', 'NG'));
         # get the states
@@ -64,9 +66,9 @@ class ModulesSettingsController extends Controller {
         $this->data['company_data'] = $company_data;
 
         if ( empty($company_data['location']) ) {
-            $this->data['company_data']['location'] = ['latitude' => 0, 'longitude' => 0];
+            $this->data['company_data']['location'] = ['latitude' => 0, 'longitude' => 0 , 'address' => ''];
         }
-        
+
         return view('modules-settings::business', $this->data);
     }
 
@@ -138,6 +140,8 @@ class ModulesSettingsController extends Controller {
                 $configuration['location']['address'] = $request->input('address1') . " " . $request->input('address2');
                 $configuration['location']['latitude'] = $request->input('latitude');
                 $configuration['location']['longitude'] = $request->input('longitude');
+                $configuration['location']['address'] = $request->input('address1');
+
                 $queryL = $sdk->createCompanyService()->addBodyParam('extra_data', $configuration)
                                                     ->send('post');
                 # send the request
@@ -277,9 +281,11 @@ class ModulesSettingsController extends Controller {
             if ($request->action === 'customise_logo') {
                 # update the business information
                 $file = $request->file('logo');
+
                 $query = $sdk->createCompanyService()
                                 ->addMultipartParam('logo', file_get_contents($file->getRealPath()), $file->getClientOriginalName())
                                 ->send('post');
+
                 # send the request
                 if (!$query->isSuccessful()) {
                     //throw new \RuntimeException($query->getErrors()[0]['title']);
@@ -436,16 +442,21 @@ class ModulesSettingsController extends Controller {
      */
     public function banking_post(Request $request, Sdk $sdk)
     {
+
         $this->validate($request, [
-            'bank' => 'required|numeric|max:100',
+            'bank' => 'required|numeric',
             'account_number' => 'required|string|max:30',
             'account_name' => 'required|string|max:80'
         ]);
+        //            |max:100',
         # validate the request
+
         try {
+
             $bankName = Banks::BANK_CODES[$request->bank];
             # we get the name of the specific bank for submission
             $query = $sdk->createProfileService();
+
             # get the query object
             $payload = $request->only(['account_number', 'account_name']);
             foreach ($payload as $key => $value) {
