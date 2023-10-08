@@ -164,7 +164,7 @@
 
                             <div class="row">
                                 <div class="col-md-12 form-group">
-                                    <input type="text" class="form-control" name="address_address" id="address_address" required placeholder="Enter Delivery Address">
+                                    <input type="text" class="form-control" v-model="geolocate_address" name="address_address" id="address_address" required placeholder="Enter Your Business Address (for pickup of orders)">
                             
                                 </div>
                             </div>
@@ -239,7 +239,8 @@
             addressIsConfirmed: false,
             useAutoComplete: true,
             locationLatitude: 0,
-            locationLongitude: 0
+            locationLongitude: 0,
+            geolocate_address: ''
         },
         mounted: function() {
             if (this.company_data.location.latitude > 0 && this.company_data.location.longitude > 0) {
@@ -367,6 +368,9 @@
                         } else if (componentType === 'country') {
                             country = component.long_name;
                             countryCode = component.short_name; // Two-digit ISO country code
+                        } else if (componentType === 'route') {
+                            vmSettingsPage.geolocate_address = component.long_name;
+                            vmSettingsPage.location.address1 = component.long_name;
                         }
                     }
 
