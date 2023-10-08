@@ -361,18 +361,27 @@
                     let state = '';
                     let country = '';
                     let countryCode = '';
+                    let streetAddress = '';
                     for (const component of place.address_components) {
                         const componentType = component.types[0];
                         if (componentType === 'administrative_area_level_1') {
                             state = component.long_name;
-                        } else if (componentType === 'country') {
+                        }
+                        if (componentType === 'country') {
                             country = component.long_name;
                             countryCode = component.short_name; // Two-digit ISO country code
-                        } else if (componentType === 'route') {
-                            vmSettingsPage.geolocate_address = component.long_name;
-                            vmSettingsPage.location.address1 = component.long_name;
+                        }
+
+                        if (componentType === 'street_number') {
+                            streetAddress += component.long_name + ' ';
+                        }
+                        
+                        if (componentType === 'route') {
+                            streetAddress += component.long_name;
                         }
                     }
+                    vmSettingsPage.geolocate_address = streetAddress;
+                    vmSettingsPage.location.address1 = streetAddress;
 
                     // Log the state and country to the console
                     // console.log(state);
