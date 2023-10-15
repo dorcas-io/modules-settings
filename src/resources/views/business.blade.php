@@ -391,6 +391,9 @@
                     vmSettingsPage.locationLongitude = place.geometry.location.lng();
                     
                 });
+
+                //add previously entered address into the geo locator as default entry
+                vmSettingsPage.geolocate_address = vmSettingsPage.location.address1;
             },
             addressConfirm: function () {
                 this.loadGoogleMaps();
