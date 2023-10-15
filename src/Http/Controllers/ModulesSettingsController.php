@@ -150,9 +150,9 @@ class ModulesSettingsController extends Controller {
                 }
 
                 // Invalidate session domain
-                $dinfo = session('domainInfo');
-                $slug =  env('DORCAS_EDITION', 'business') === 'business' ? $dinfo->getHost() : $dinfo->getSubdomain();
-                $domain = Cache::forget('domain_' . $slug);
+                //$dinfo = session('domainInfo'); //seems this is ONLY set during a resolveDomain for store addresses
+                //$slug =  env('DORCAS_EDITION', 'business') === 'business' ? $dinfo->getHost() : $dinfo->getSubdomain();
+                //$domain = Cache::forget('domain_' . $slug);
 
 
                 $message = ['Successfully updated your company address information.'];
