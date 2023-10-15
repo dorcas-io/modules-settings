@@ -149,6 +149,11 @@ class ModulesSettingsController extends Controller {
                     throw new \RuntimeException('Failed while updating your geo-location data. Please try again.');
                 }
 
+                // Invalidate session domain
+                $dinfo = session('domainInfo');
+                $slug =  env('DORCAS_EDITION', 'business') === 'business' ? $dinfo->getHost() : $dinfo->getSubdomain();
+                $domain = Cache::forget('domain_' . $slug);
+
 
                 $message = ['Successfully updated your company address information.'];
             }
