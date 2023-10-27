@@ -137,10 +137,10 @@ class ModulesSettingsController extends Controller {
                 if (empty($configuration['location'])) {
                     $configuration['location'] = [];
                 }
-                $configuration['location']['address'] = $request->input('address1') . " " . $request->input('address2');
+                $configuration['location']['address'] = $request->input('address1') . " " . $request->input('address2') . ", " . $request->input('city') . ", " . $request->input('state');
                 $configuration['location']['latitude'] = $request->input('latitude');
                 $configuration['location']['longitude'] = $request->input('longitude');
-                $configuration['location']['address'] = $request->input('address1');
+                //$configuration['location']['address'] = $request->input('address1');
 
                 $queryL = $sdk->createCompanyService()->addBodyParam('extra_data', $configuration)
                                                     ->send('post');

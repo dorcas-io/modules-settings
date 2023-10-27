@@ -379,6 +379,10 @@
                         if (componentType === 'route') {
                             streetAddress += component.long_name;
                         }
+                        // if (componentType === 'locality') {
+                        //     streetAddress += component.long_name;
+                        // }
+
                     }
                     vmSettingsPage.geolocate_address = streetAddress;
                     vmSettingsPage.location.address1 = streetAddress;
